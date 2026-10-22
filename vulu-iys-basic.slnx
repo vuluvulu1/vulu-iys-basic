@@ -2,4 +2,5 @@
   <Project Path="Api/Api.csproj" />
   <Project Path="Masaustu/Masaustu.csproj" />
   <Project Path="Modeller/Modeller.csproj" />
+  <Project Path="Paketleyici/Paketleyici.csproj" />
 </Solution>

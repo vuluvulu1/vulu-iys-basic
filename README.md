@@ -44,6 +44,17 @@ bölümünden değiştirilir. "vulu İYS" yalnızca giriş ekranının altında 
 İlk açılışta veritabanında hiç kullanıcı yoksa `admin` / `admin1234` hesabı oluşturulur
 (`Api/appsettings.json` içindeki `IlkYonetici`). İlk girişten sonra şifreyi "Şifre değiştir" ile değiştirin.
 
+## İşletmeye özel paket hazırlama
+
+`Paketleyici` projesini çalıştırın, işletmenin adını yazıp "Paketi hazırla"ya basın. Program API'yi ve masaüstü
+programını derleyip `Dagitim/<işletme adı>/` klasörüne koyar:
+
+- `Api/appsettings.json` içine işletmenin adı ve ona ayrılan veritabanının adı yazılır
+  (örn. "Yıldız Teknik Servis" için `vulu_yildiz_teknik_servis`). Adres ve telefon boş bırakılır; gerekirse bu
+  dosyadan doldurulur.
+- `Baslat.bat` önce API'yi, sonra masaüstü programını açar.
+- .NET pakete dahildir (her biri yaklaşık 120 MB); karşı bilgisayarda yalnızca MongoDB kurulu olmalıdır.
+
 ## Kurallar
 
 - Yönetici: personel ekler/düzenler, raporları görür, stoğu düzenler.
