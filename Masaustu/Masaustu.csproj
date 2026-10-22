@@ -7,11 +7,16 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>logo.ico</ApplicationIcon>
+
+    <!-- Programın bağlandığı API. Exe'nin içine yazılır (bkz. Api.cs);
+         Paketleyici her işletme için bunu o işletmenin Render adresiyle değiştirir. -->
+    <ApiAdresi Condition="'$(ApiAdresi)' == ''">http://localhost:5050/</ApiAdresi>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="logo.ico" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="ayarlar.json" CopyToOutputDirectory="PreserveNewest" />
+    <AssemblyMetadata Include="ApiAdresi" Value="$(ApiAdresi)" />
+    <!-- Logo exe'nin içine gömülür, programın yanında ayrı dosya gerekmez (bkz. Tema.cs). -->
+    <EmbeddedResource Include="logo.ico" />
   </ItemGroup>
 
   <ItemGroup>

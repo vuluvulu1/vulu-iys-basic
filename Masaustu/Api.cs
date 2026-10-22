@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json.Nodes;
+using System.Reflection;
 using Modeller;
 
 namespace Masaustu
@@ -11,17 +11,22 @@ namespace Masaustu
     // formlar bunu try/catch ile yakalayıp MessageBox ile gösterir.
     public static class Api
     {
-        // API'nin adresi programın yanındaki ayarlar.json dosyasından okunur (Render'daki API ya da bu bilgisayardaki).
-        // Paketleyici her işletmenin paketine o işletmenin API adresini yazar.
+        // API'nin adresi derlenirken exe'nin içine yazılır (Masaustu.csproj içindeki ApiAdresi).
+        // Paketleyici her işletmenin programını o işletmenin Render adresiyle derler.
         private static readonly string ApiAdresi = AdresiOku();
 
         private static readonly HttpClient istemci = new HttpClient { BaseAddress = new Uri(ApiAdresi) };
 
         private static string AdresiOku()
         {
-            string dosya = Path.Combine(AppContext.BaseDirectory, "ayarlar.json");
-            JsonNode? ayarlar = JsonNode.Parse(File.ReadAllText(dosya));
-            string adres = ayarlar?["ApiAdresi"]?.GetValue<string>() ?? "";
+            string adres = "";
+            foreach (AssemblyMetadataAttribute bilgi in typeof(Api).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>())
+            {
+                if (bilgi.Key == "ApiAdresi")
+                {
+                    adres = bilgi.Value ?? "";
+                }
+            }
 
             // "https://ornek.onrender.com" ile "https://ornek.onrender.com/" aynı işi görsün.
             if (!adres.EndsWith("/"))

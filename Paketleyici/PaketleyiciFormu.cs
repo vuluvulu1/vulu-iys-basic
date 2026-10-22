@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 namespace Paketleyici
 {
     // Bir işletmenin Render'daki API adresini alır, işletmenin adını o API'den öğrenir ve masaüstü programını
-    // bu adrese bağlı olarak Dagitim\<işletme adı>\ klasörüne hazırlar. Klasör işletmeye olduğu gibi verilir;
+    // bu adrese bağlı tek bir exe olarak hazırlar: Dagitim\<işletme adı>.exe. Exe işletmeye olduğu gibi verilir;
     // karşı bilgisayarda .NET kurulu olması gerekmez.
     public partial class PaketleyiciFormu : Form
     {
@@ -36,10 +36,10 @@ namespace Paketleyici
                 lblDurum.Text = "API'ye bağlanılıyor... (Render uyuyorsa bir dakika kadar sürebilir)";
                 string isletmeAdi = await IsletmeAdiniGetir(apiAdresi);
 
-                string hedef = Path.Combine(cozumKlasoru, "Dagitim", DosyaAdi(isletmeAdi));
-                if (Directory.Exists(hedef))
+                string hedef = Path.Combine(cozumKlasoru, "Dagitim", DosyaAdi(isletmeAdi) + ".exe");
+                if (File.Exists(hedef))
                 {
-                    var cevap = MessageBox.Show(isletmeAdi + " için bir paket zaten var. Silinip yeniden hazırlansın mı?",
+                    var cevap = MessageBox.Show(isletmeAdi + " için bir program zaten var. Yenisiyle değiştirilsin mi?",
                         "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (cevap != DialogResult.Yes)
                     {
@@ -47,15 +47,29 @@ namespace Paketleyici
                         btnHazirla.Enabled = true;
                         return;
                     }
-                    Directory.Delete(hedef, true);
                 }
 
                 lblDurum.Text = isletmeAdi + " için program hazırlanıyor... (ilk seferde birkaç dakika sürebilir)";
-                await Yayinla(Path.Combine(cozumKlasoru, "Masaustu"), hedef);
-                AyarDosyasiYaz(hedef, apiAdresi);
+
+                // Önce geçici bir klasöre yayımlanır, oradan yalnızca exe işletmenin adıyla Dagitim'e alınır.
+                string geciciKlasor = Path.Combine(Path.GetTempPath(), "vulu-paket-" + Guid.NewGuid().ToString("N"));
+                try
+                {
+                    await Yayinla(Path.Combine(cozumKlasoru, "Masaustu"), geciciKlasor, apiAdresi + "/");
+                    Directory.CreateDirectory(Path.GetDirectoryName(hedef)!);
+                    File.Copy(Path.Combine(geciciKlasor, "Masaustu.exe"), hedef, true);
+                }
+                finally
+                {
+                    if (Directory.Exists(geciciKlasor))
+                    {
+                        Directory.Delete(geciciKlasor, true);
+                    }
+                }
 
                 lblDurum.Text = "Hazır: " + hedef;
-                Process.Start("explorer.exe", hedef);
+                // Gezgin'i açıp hazırlanan exe'yi seçili gösterir.
+                Process.Start("explorer.exe", "/select,\"" + hedef + "\"");
             }
             catch (Exception hata)
             {
@@ -86,9 +100,9 @@ namespace Paketleyici
             return ad;
         }
 
-        // "dotnet publish" ile masaüstü programını derleyip çalışmaya hazır dosyaları çıkış klasörüne koyar.
-        // --self-contained: .NET'in kendisi de pakete girer, böylece karşı bilgisayarda .NET kurulu olmasa da çalışır.
-        private static async Task Yayinla(string projeKlasoru, string cikisKlasoru)
+        // "dotnet publish" ile masaüstü programını tek bir exe olarak derler.
+        // --self-contained: .NET'in kendisi de exe'ye girer, böylece karşı bilgisayarda .NET kurulu olmasa da çalışır.
+        private static async Task Yayinla(string projeKlasoru, string cikisKlasoru, string apiAdresi)
         {
             var bilgi = new ProcessStartInfo("dotnet")
             {
@@ -105,6 +119,16 @@ namespace Paketleyici
             bilgi.ArgumentList.Add("-o");
             bilgi.ArgumentList.Add(cikisKlasoru);
 
+            // Programın bağlanacağı adres exe'nin içine yazılır (bkz. Masaustu.csproj, ApiAdresi).
+            bilgi.ArgumentList.Add("-p:ApiAdresi=" + apiAdresi);
+            // Her şey tek bir exe'de toplanır ve sıkıştırılır.
+            bilgi.ArgumentList.Add("-p:PublishSingleFile=true");
+            bilgi.ArgumentList.Add("-p:IncludeNativeLibrariesForSelfExtract=true");
+            bilgi.ArgumentList.Add("-p:EnableCompressionInSingleFile=true");
+            // .NET'in başka diller için getirdiği çeviri klasörleri (de, fr, ja ...) ve hata ayıklama dosyası alınmaz.
+            bilgi.ArgumentList.Add("-p:SatelliteResourceLanguages=tr");
+            bilgi.ArgumentList.Add("-p:DebugType=none");
+
             using Process islem = Process.Start(bilgi)!;
             string cikti = await islem.StandardOutput.ReadToEndAsync();
             await islem.WaitForExitAsync();
@@ -113,13 +137,6 @@ namespace Paketleyici
             {
                 throw new Exception("Derleme başarısız oldu:\n\n" + cikti);
             }
-        }
-
-        // Paketteki programın bağlanacağı API adresini yazar (bkz. Masaustu\Api.cs).
-        private static void AyarDosyasiYaz(string hedef, string apiAdresi)
-        {
-            var ayarlar = new JsonObject { ["ApiAdresi"] = apiAdresi + "/" };
-            File.WriteAllText(Path.Combine(hedef, "ayarlar.json"), ayarlar.ToJsonString(new() { WriteIndented = true }));
         }
 
         // Paketleyicinin bulunduğu klasörden yukarı doğru çıkıp vulu-iys-basic.slnx dosyasını arar.

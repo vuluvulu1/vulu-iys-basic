@@ -37,12 +37,13 @@ namespace Masaustu
             }
         }
 
-        // Pencere simgesi ve giriş ekranındaki küçük logo için. Dosya programın yanına kopyalanır (bkz. Masaustu.csproj).
+        // Pencere simgesi ve giriş ekranındaki küçük logo için. logo.ico exe'nin içine gömülüdür (bkz. Masaustu.csproj).
         public static Icon Logo()
         {
             if (logo == null)
             {
-                logo = new Icon(Path.Combine(AppContext.BaseDirectory, "logo.ico"));
+                Stream dosya = typeof(Tema).Assembly.GetManifestResourceStream("Masaustu.logo.ico")!;
+                logo = new Icon(dosya);
             }
             return logo;
         }

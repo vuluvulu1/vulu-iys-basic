@@ -52,7 +52,7 @@ namespace Paketleyici
             lblAciklama.Location = new Point(22, 46);
             lblAciklama.Name = "lblAciklama";
             lblAciklama.TabIndex = 1;
-            lblAciklama.Text = "Program işletmenin API'sine bağlanır ve Dagitim klasörüne konur.";
+            lblAciklama.Text = "Program işletmenin API'sine bağlanıp tek exe olarak Dagitim'e konur.";
             //
             // lblApiAdresi
             //

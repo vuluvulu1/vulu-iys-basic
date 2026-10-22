@@ -37,7 +37,8 @@ veritabanı vardır.
    dotnet run --project Masaustu
    ```
 
-   Programın bağlandığı API adresi `Masaustu/ayarlar.json` içindedir (varsayılan `http://localhost:5050/`).
+   Programın bağlandığı API adresi `Masaustu/Masaustu.csproj` içindeki `ApiAdresi` değeridir (varsayılan
+   `http://localhost:5050/`); derlenirken exe'nin içine yazılır.
 
 Visual Studio'da: çözüme sağ tık → "Configure Startup Projects" → "Multiple startup projects" ile `Api` ve
 `Masaustu` birlikte başlatılabilir.
@@ -66,10 +67,9 @@ bir dakika kadar sürebilir.
 ## İşletmeye özel paket hazırlama
 
 `Paketleyici` projesini çalıştırın, işletmenin Render adresini (örn. `https://yildiz-servis.onrender.com`) yazıp
-"Paketi hazırla"ya basın. Paketleyici işletmenin adını o API'den öğrenir, masaüstü programını derler ve
-`Dagitim/<işletme adı>/` klasörüne koyar; programın yanındaki `ayarlar.json` dosyasına API adresini yazar.
-Klasör işletmeye olduğu gibi verilir ve `Masaustu.exe` ile açılır. .NET pakete dahildir (yaklaşık 120 MB), karşı
-bilgisayarda bir şey kurmak gerekmez. "vulu İYS" yalnızca giriş ekranının altında küçük olarak yazar.
+"Paketi hazırla"ya basın. Paketleyici işletmenin adını o API'den öğrenir ve masaüstü programını bu adrese bağlı
+tek bir exe olarak `Dagitim/<işletme adı>.exe` yoluna koyar. Exe işletmeye olduğu gibi verilir; .NET ve logo
+içindedir (yaklaşık 50 MB), karşı bilgisayarda bir şey kurmak gerekmez. "vulu İYS" yalnızca giriş ekranının altında küçük olarak yazar.
 
 ## Kurallar
 
