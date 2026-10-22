@@ -71,6 +71,18 @@ bir dakika kadar sürebilir.
 tek bir exe olarak `Dagitim/<işletme adı>.exe` yoluna koyar. Exe işletmeye olduğu gibi verilir; .NET ve logo
 içindedir (yaklaşık 50 MB), karşı bilgisayarda bir şey kurmak gerekmez. "vulu İYS" yalnızca giriş ekranının altında küçük olarak yazar.
 
+## Sunum için örnek veri
+
+`OrnekVeri` projesi bir işletmenin veritabanını API üzerinden örnek bilgilerle doldurur: 4 personel (biri pasif),
+12 stok kartı, 15 müşteri ve farklı durumlarda 20 servis kaydı (parçaları, notları ve işlem geçmişiyle).
+
+```bash
+dotnet run --project OrnekVeri
+```
+
+API adresini, yönetici kullanıcı adını ve şifresini sorar. Eklenen teknisyenler (`emre`, `selin`, `burak`)
+`Sunum2026` şifresiyle giriş yapabilir. Kayıtların açılış tarihi API'ye eklendikleri andır.
+
 ## Kurallar
 
 - Yönetici: personel ekler/düzenler, raporları görür, stoğu düzenler.
