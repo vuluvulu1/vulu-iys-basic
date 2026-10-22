@@ -1,5 +1,4 @@
 using Modeller;
-using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
 namespace Api;
@@ -18,11 +17,6 @@ public static class Veritabani
     {
         string baglantiDizesi = ayarlar["Mongo:BaglantiDizesi"] ?? "mongodb://localhost:27017";
         string veritabaniAdi = ayarlar["Mongo:VeritabaniAdi"] ?? "vulu_basic";
-
-        // Veritabanındaki eski kayıtlarda modelden kaldırılmış alanlar duruyor olabilir;
-        // belgede sınıfta olmayan bir alan varsa hata verme, o alanı görmezden gel.
-        var kurallar = new ConventionPack { new IgnoreExtraElementsConvention(true) };
-        ConventionRegistry.Register("FazlaAlanlariYokSay", kurallar, _ => true);
 
         var istemci = new MongoClient(baglantiDizesi);
         var veritabani = istemci.GetDatabase(veritabaniAdi);
