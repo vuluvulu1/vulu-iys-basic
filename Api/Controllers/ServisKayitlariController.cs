@@ -211,77 +211,6 @@ public class ServisKayitlariController : ControllerBase
         return Ok();
     }
 
-    // Teklif verilince kayıt "Onay bekliyor" olur; müşterinin cevabı ayrıca kaydedilir.
-    [HttpPost("{id}/teklif")]
-    public async Task<IActionResult> TeklifVer(string id, TeklifIstegi istek)
-    {
-        var ben = await Oturumlar.KullaniciyiBul(Request);
-        if (ben == null) return Unauthorized();
-        if (istek.Tutar <= 0) return BadRequest("Teklif tutarı sıfırdan büyük olmalı.");
-
-        var kayit = await Veritabani.ServisKayitlari.Find(s => s.Id == id).FirstOrDefaultAsync();
-        if (kayit == null) return NotFound("Servis kaydı bulunamadı.");
-        if (kayit.Durum == ServisDurumlari.TeslimEdildi || kayit.Durum == ServisDurumlari.IptalEdildi)
-        {
-            return BadRequest("Teslim edilmiş ya da iptal edilmiş kayda teklif verilemez.");
-        }
-
-        var teklif = new Teklif
-        {
-            Tutar = istek.Tutar,
-            Aciklama = istek.Aciklama,
-            Durum = TeklifDurumlari.Bekliyor,
-            Tarih = DateTime.UtcNow
-        };
-        await Veritabani.ServisKayitlari.UpdateOneAsync(
-            s => s.Id == id,
-            Builders<ServisKaydi>.Update
-                .Set(s => s.Teklif, teklif)
-                .Set(s => s.Durum, ServisDurumlari.OnayBekliyor));
-        await Veritabani.GecmiseYaz(id, ben, "Teklif verildi: " + istek.Tutar.ToString("N2") + " ₺");
-        return Ok();
-    }
-
-    // Müşteri onaylarsa iş başlar ("Devam ediyor"), reddederse kayıt iptal edilir.
-    [HttpPost("{id}/teklif/yanit")]
-    public async Task<IActionResult> TeklifYaniti(string id, TeklifYanitIstegi istek)
-    {
-        var ben = await Oturumlar.KullaniciyiBul(Request);
-        if (ben == null) return Unauthorized();
-
-        var kayit = await Veritabani.ServisKayitlari.Find(s => s.Id == id).FirstOrDefaultAsync();
-        if (kayit == null) return NotFound("Servis kaydı bulunamadı.");
-        if (kayit.Teklif == null || kayit.Teklif.Durum != TeklifDurumlari.Bekliyor)
-        {
-            return BadRequest("Cevap bekleyen bir teklif yok.");
-        }
-
-        string teklifDurumu = TeklifDurumlari.Reddedildi;
-        string yeniDurum = ServisDurumlari.IptalEdildi;
-        if (istek.Onaylandi)
-        {
-            teklifDurumu = TeklifDurumlari.Onaylandi;
-            yeniDurum = ServisDurumlari.DevamEdiyor;
-        }
-
-        kayit.Teklif.Durum = teklifDurumu;
-        kayit.Teklif.YanitTarihi = DateTime.UtcNow;
-        kayit.Teklif.YanitNotu = istek.Not;
-        await Veritabani.ServisKayitlari.UpdateOneAsync(
-            s => s.Id == id,
-            Builders<ServisKaydi>.Update
-                .Set(s => s.Teklif, kayit.Teklif)
-                .Set(s => s.Durum, yeniDurum));
-
-        string aciklama = "Müşteri teklifi " + teklifDurumu.ToLower() + ".";
-        if (istek.Not != "")
-        {
-            aciklama += " Not: " + istek.Not;
-        }
-        await Veritabani.GecmiseYaz(id, ben, aciklama);
-        return Ok();
-    }
-
     [HttpGet("{id}/gecmis")]
     public async Task<IActionResult> Gecmis(string id)
     {
@@ -393,8 +322,7 @@ public class ServisKayitlariController : ControllerBase
     // Kayıt "Tamamlandı" ya da "Teslim edildi" olduğu anı not eder; geri alınırsa tarihi temizler.
     private static void TarihleriAyarla(ServisKaydi kayit)
     {
-        if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.OnayBekliyor
-            || kayit.Durum == ServisDurumlari.DevamEdiyor)
+        if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.DevamEdiyor)
         {
             kayit.TamamlanmaTarihi = null;
             kayit.TeslimTarihi = null;

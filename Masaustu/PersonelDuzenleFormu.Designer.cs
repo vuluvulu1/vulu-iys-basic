@@ -55,6 +55,9 @@
             // 
             // txtKullaniciAdi
             // 
+            txtKullaniciAdi.BackColor = Color.FromArgb(43, 26, 16);
+            txtKullaniciAdi.BorderStyle = BorderStyle.FixedSingle;
+            txtKullaniciAdi.ForeColor = Color.FromArgb(243, 230, 214);
             txtKullaniciAdi.Location = new Point(120, 20);
             txtKullaniciAdi.Name = "txtKullaniciAdi";
             txtKullaniciAdi.Size = new Size(270, 23);
@@ -70,6 +73,9 @@
             // 
             // txtAdSoyad
             // 
+            txtAdSoyad.BackColor = Color.FromArgb(43, 26, 16);
+            txtAdSoyad.BorderStyle = BorderStyle.FixedSingle;
+            txtAdSoyad.ForeColor = Color.FromArgb(243, 230, 214);
             txtAdSoyad.Location = new Point(120, 55);
             txtAdSoyad.Name = "txtAdSoyad";
             txtAdSoyad.Size = new Size(270, 23);
@@ -85,6 +91,9 @@
             // 
             // txtTelefon
             // 
+            txtTelefon.BackColor = Color.FromArgb(43, 26, 16);
+            txtTelefon.BorderStyle = BorderStyle.FixedSingle;
+            txtTelefon.ForeColor = Color.FromArgb(243, 230, 214);
             txtTelefon.Location = new Point(120, 90);
             txtTelefon.Name = "txtTelefon";
             txtTelefon.Size = new Size(270, 23);
@@ -100,7 +109,10 @@
             // 
             // cmbRol
             // 
+            cmbRol.BackColor = Color.FromArgb(43, 26, 16);
             cmbRol.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbRol.FlatStyle = FlatStyle.Flat;
+            cmbRol.ForeColor = Color.FromArgb(243, 230, 214);
             cmbRol.Location = new Point(120, 125);
             cmbRol.Name = "cmbRol";
             cmbRol.Size = new Size(150, 23);
@@ -134,6 +146,9 @@
             // 
             // txtSifre
             // 
+            txtSifre.BackColor = Color.FromArgb(43, 26, 16);
+            txtSifre.BorderStyle = BorderStyle.FixedSingle;
+            txtSifre.ForeColor = Color.FromArgb(243, 230, 214);
             txtSifre.Location = new Point(120, 225);
             txtSifre.Name = "txtSifre";
             txtSifre.Size = new Size(270, 23);
@@ -144,31 +159,45 @@
             // 
             lblSifreNotu.AutoSize = true;
             lblSifreNotu.Location = new Point(120, 252);
-            lblSifreNotu.ForeColor = SystemColors.GrayText;
+            lblSifreNotu.ForeColor = Color.FromArgb(184, 154, 124);
             lblSifreNotu.Name = "lblSifreNotu";
             lblSifreNotu.TabIndex = 12;
             lblSifreNotu.Text = "En az 8 karakter.";
             // 
             // btnKaydet
             // 
+            btnKaydet.BackColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.Cursor = Cursors.Hand;
+            btnKaydet.FlatAppearance.BorderColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.FlatAppearance.MouseDownBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatAppearance.MouseOverBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatStyle = FlatStyle.Flat;
+            btnKaydet.ForeColor = Color.FromArgb(26, 17, 10);
             btnKaydet.Location = new Point(180, 285);
             btnKaydet.Name = "btnKaydet";
             btnKaydet.Size = new Size(100, 32);
             btnKaydet.TabIndex = 13;
             btnKaydet.Tag = "ana";
             btnKaydet.Text = "Kaydet";
-            btnKaydet.UseVisualStyleBackColor = true;
+            btnKaydet.UseVisualStyleBackColor = false;
             btnKaydet.Click += btnKaydet_Click;
             // 
             // btnVazgec
             // 
+            btnVazgec.BackColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.Cursor = Cursors.Hand;
             btnVazgec.DialogResult = DialogResult.Cancel;
+            btnVazgec.FlatAppearance.BorderColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.FlatAppearance.MouseDownBackColor = Color.FromArgb(181, 128, 79);
+            btnVazgec.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 46, 28);
+            btnVazgec.FlatStyle = FlatStyle.Flat;
+            btnVazgec.ForeColor = Color.FromArgb(243, 230, 214);
             btnVazgec.Location = new Point(290, 285);
             btnVazgec.Name = "btnVazgec";
             btnVazgec.Size = new Size(100, 32);
             btnVazgec.TabIndex = 14;
             btnVazgec.Text = "Vazgeç";
-            btnVazgec.UseVisualStyleBackColor = true;
+            btnVazgec.UseVisualStyleBackColor = false;
             // 
             // PersonelDuzenleFormu
             // 
@@ -176,6 +205,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnVazgec;
+            BackColor = Color.FromArgb(26, 17, 10);
             ClientSize = new Size(420, 330);
             Controls.Add(btnVazgec);
             Controls.Add(btnKaydet);
@@ -195,6 +225,7 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            ForeColor = Color.FromArgb(243, 230, 214);
             Name = "PersonelDuzenleFormu";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Personel";

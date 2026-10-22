@@ -50,6 +50,9 @@
             // 
             // txtAdSoyad
             // 
+            txtAdSoyad.BackColor = Color.FromArgb(43, 26, 16);
+            txtAdSoyad.BorderStyle = BorderStyle.FixedSingle;
+            txtAdSoyad.ForeColor = Color.FromArgb(243, 230, 214);
             txtAdSoyad.Location = new Point(110, 20);
             txtAdSoyad.Name = "txtAdSoyad";
             txtAdSoyad.Size = new Size(280, 23);
@@ -65,6 +68,9 @@
             // 
             // txtTelefon
             // 
+            txtTelefon.BackColor = Color.FromArgb(43, 26, 16);
+            txtTelefon.BorderStyle = BorderStyle.FixedSingle;
+            txtTelefon.ForeColor = Color.FromArgb(243, 230, 214);
             txtTelefon.Location = new Point(110, 55);
             txtTelefon.Name = "txtTelefon";
             txtTelefon.Size = new Size(280, 23);
@@ -80,6 +86,9 @@
             // 
             // txtEmail
             // 
+            txtEmail.BackColor = Color.FromArgb(43, 26, 16);
+            txtEmail.BorderStyle = BorderStyle.FixedSingle;
+            txtEmail.ForeColor = Color.FromArgb(243, 230, 214);
             txtEmail.Location = new Point(110, 90);
             txtEmail.Name = "txtEmail";
             txtEmail.Size = new Size(280, 23);
@@ -95,6 +104,9 @@
             // 
             // txtAdres
             // 
+            txtAdres.BackColor = Color.FromArgb(43, 26, 16);
+            txtAdres.BorderStyle = BorderStyle.FixedSingle;
+            txtAdres.ForeColor = Color.FromArgb(243, 230, 214);
             txtAdres.Location = new Point(110, 125);
             txtAdres.Multiline = true;
             txtAdres.ScrollBars = ScrollBars.Vertical;
@@ -104,24 +116,38 @@
             // 
             // btnKaydet
             // 
+            btnKaydet.BackColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.Cursor = Cursors.Hand;
+            btnKaydet.FlatAppearance.BorderColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.FlatAppearance.MouseDownBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatAppearance.MouseOverBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatStyle = FlatStyle.Flat;
+            btnKaydet.ForeColor = Color.FromArgb(26, 17, 10);
             btnKaydet.Location = new Point(180, 200);
             btnKaydet.Name = "btnKaydet";
             btnKaydet.Size = new Size(100, 32);
             btnKaydet.TabIndex = 8;
             btnKaydet.Tag = "ana";
             btnKaydet.Text = "Kaydet";
-            btnKaydet.UseVisualStyleBackColor = true;
+            btnKaydet.UseVisualStyleBackColor = false;
             btnKaydet.Click += btnKaydet_Click;
             // 
             // btnVazgec
             // 
+            btnVazgec.BackColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.Cursor = Cursors.Hand;
             btnVazgec.DialogResult = DialogResult.Cancel;
+            btnVazgec.FlatAppearance.BorderColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.FlatAppearance.MouseDownBackColor = Color.FromArgb(181, 128, 79);
+            btnVazgec.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 46, 28);
+            btnVazgec.FlatStyle = FlatStyle.Flat;
+            btnVazgec.ForeColor = Color.FromArgb(243, 230, 214);
             btnVazgec.Location = new Point(290, 200);
             btnVazgec.Name = "btnVazgec";
             btnVazgec.Size = new Size(100, 32);
             btnVazgec.TabIndex = 9;
             btnVazgec.Text = "Vazgeç";
-            btnVazgec.UseVisualStyleBackColor = true;
+            btnVazgec.UseVisualStyleBackColor = false;
             // 
             // MusteriFormu
             // 
@@ -129,6 +155,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnVazgec;
+            BackColor = Color.FromArgb(26, 17, 10);
             ClientSize = new Size(420, 250);
             Controls.Add(btnVazgec);
             Controls.Add(btnKaydet);
@@ -143,6 +170,7 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            ForeColor = Color.FromArgb(243, 230, 214);
             Name = "MusteriFormu";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Müşteri";

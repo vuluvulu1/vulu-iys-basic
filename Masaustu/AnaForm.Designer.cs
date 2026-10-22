@@ -29,8 +29,7 @@
         private void InitializeComponent()
         {
             pnlMenu = new Panel();
-            picLogo = new PictureBox();
-            lblMarka = new Label();
+            lblIsletmeAdi = new Label();
             mnuMusteriler = new Label();
             mnuServis = new Label();
             mnuStok = new Label();
@@ -62,13 +61,11 @@
             pnlKart3.SuspendLayout();
             pnlKart4.SuspendLayout();
             pnlKart5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             SuspendLayout();
             // 
             // pnlMenu
             // 
-            pnlMenu.Controls.Add(picLogo);
-            pnlMenu.Controls.Add(lblMarka);
+            pnlMenu.Controls.Add(lblIsletmeAdi);
             pnlMenu.Controls.Add(mnuMusteriler);
             pnlMenu.Controls.Add(mnuServis);
             pnlMenu.Controls.Add(mnuStok);
@@ -76,6 +73,7 @@
             pnlMenu.Controls.Add(mnuRapor);
             pnlMenu.Controls.Add(mnuSifre);
             pnlMenu.Controls.Add(mnuCikis);
+            pnlMenu.BackColor = Color.FromArgb(43, 26, 16);
             pnlMenu.Dock = DockStyle.Left;
             pnlMenu.Location = new Point(0, 0);
             pnlMenu.Name = "pnlMenu";
@@ -83,23 +81,16 @@
             pnlMenu.TabIndex = 0;
             pnlMenu.Tag = "menu";
             // 
-            // picLogo
+            // lblIsletmeAdi
             // 
-            picLogo.Location = new Point(14, 16);
-            picLogo.Name = "picLogo";
-            picLogo.Size = new Size(40, 40);
-            picLogo.TabIndex = 1;
-            picLogo.SizeMode = PictureBoxSizeMode.Zoom;
-            picLogo.TabStop = false;
-            // 
-            // lblMarka
-            // 
-            lblMarka.AutoSize = true;
-            lblMarka.Location = new Point(60, 25);
-            lblMarka.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            lblMarka.Name = "lblMarka";
-            lblMarka.TabIndex = 2;
-            lblMarka.Text = "vulu İYS";
+            lblIsletmeAdi.AutoEllipsis = true;
+            lblIsletmeAdi.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblIsletmeAdi.Location = new Point(14, 16);
+            lblIsletmeAdi.Name = "lblIsletmeAdi";
+            lblIsletmeAdi.Size = new Size(196, 50);
+            lblIsletmeAdi.TabIndex = 1;
+            lblIsletmeAdi.Text = "İşletme adı";
+            lblIsletmeAdi.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // mnuMusteriler
             // 
@@ -108,7 +99,7 @@
             mnuMusteriler.Padding = new Padding(10, 0, 0, 0);
             mnuMusteriler.Name = "mnuMusteriler";
             mnuMusteriler.Size = new Size(200, 38);
-            mnuMusteriler.TabIndex = 3;
+            mnuMusteriler.TabIndex = 2;
             mnuMusteriler.Tag = "menu";
             mnuMusteriler.Text = "Müşteriler";
             mnuMusteriler.TextAlign = ContentAlignment.MiddleLeft;
@@ -121,7 +112,7 @@
             mnuServis.Padding = new Padding(10, 0, 0, 0);
             mnuServis.Name = "mnuServis";
             mnuServis.Size = new Size(200, 38);
-            mnuServis.TabIndex = 4;
+            mnuServis.TabIndex = 3;
             mnuServis.Tag = "menu";
             mnuServis.Text = "Servis kayıtları";
             mnuServis.TextAlign = ContentAlignment.MiddleLeft;
@@ -134,7 +125,7 @@
             mnuStok.Padding = new Padding(10, 0, 0, 0);
             mnuStok.Name = "mnuStok";
             mnuStok.Size = new Size(200, 38);
-            mnuStok.TabIndex = 5;
+            mnuStok.TabIndex = 4;
             mnuStok.Tag = "menu";
             mnuStok.Text = "Stok";
             mnuStok.TextAlign = ContentAlignment.MiddleLeft;
@@ -147,7 +138,7 @@
             mnuPersonel.Padding = new Padding(10, 0, 0, 0);
             mnuPersonel.Name = "mnuPersonel";
             mnuPersonel.Size = new Size(200, 38);
-            mnuPersonel.TabIndex = 6;
+            mnuPersonel.TabIndex = 5;
             mnuPersonel.Tag = "menu";
             mnuPersonel.Text = "Personel";
             mnuPersonel.TextAlign = ContentAlignment.MiddleLeft;
@@ -160,7 +151,7 @@
             mnuRapor.Padding = new Padding(10, 0, 0, 0);
             mnuRapor.Name = "mnuRapor";
             mnuRapor.Size = new Size(200, 38);
-            mnuRapor.TabIndex = 7;
+            mnuRapor.TabIndex = 6;
             mnuRapor.Tag = "menu";
             mnuRapor.Text = "Raporlar";
             mnuRapor.TextAlign = ContentAlignment.MiddleLeft;
@@ -173,7 +164,7 @@
             mnuSifre.Padding = new Padding(10, 0, 0, 0);
             mnuSifre.Name = "mnuSifre";
             mnuSifre.Size = new Size(200, 38);
-            mnuSifre.TabIndex = 8;
+            mnuSifre.TabIndex = 7;
             mnuSifre.Tag = "menu";
             mnuSifre.Text = "Şifre değiştir";
             mnuSifre.TextAlign = ContentAlignment.MiddleLeft;
@@ -186,7 +177,7 @@
             mnuCikis.Padding = new Padding(10, 0, 0, 0);
             mnuCikis.Name = "mnuCikis";
             mnuCikis.Size = new Size(200, 38);
-            mnuCikis.TabIndex = 9;
+            mnuCikis.TabIndex = 8;
             mnuCikis.Tag = "menu";
             mnuCikis.Text = "Çıkış yap";
             mnuCikis.TextAlign = ContentAlignment.MiddleLeft;
@@ -198,35 +189,36 @@
             lblHosgeldin.Location = new Point(248, 26);
             lblHosgeldin.Font = new Font("Segoe UI", 13F, FontStyle.Bold);
             lblHosgeldin.Name = "lblHosgeldin";
-            lblHosgeldin.TabIndex = 10;
+            lblHosgeldin.TabIndex = 9;
             lblHosgeldin.Text = "Hoş geldin";
             // 
             // lblOzetBasligi
             // 
             lblOzetBasligi.AutoSize = true;
             lblOzetBasligi.Location = new Point(250, 56);
-            lblOzetBasligi.ForeColor = SystemColors.GrayText;
+            lblOzetBasligi.ForeColor = Color.FromArgb(184, 154, 124);
             lblOzetBasligi.Name = "lblOzetBasligi";
-            lblOzetBasligi.TabIndex = 11;
+            lblOzetBasligi.TabIndex = 10;
             lblOzetBasligi.Text = "Bugünün özeti";
             // 
             // pnlKart1
             // 
             pnlKart1.Controls.Add(lblKartBaslik1);
             pnlKart1.Controls.Add(lblAcikIs);
+            pnlKart1.BackColor = Color.FromArgb(43, 26, 16);
             pnlKart1.Location = new Point(250, 84);
             pnlKart1.Name = "pnlKart1";
             pnlKart1.Size = new Size(150, 84);
-            pnlKart1.TabIndex = 12;
+            pnlKart1.TabIndex = 11;
             pnlKart1.Tag = "kart";
             // 
             // lblKartBaslik1
             // 
             lblKartBaslik1.AutoSize = true;
             lblKartBaslik1.Location = new Point(12, 10);
-            lblKartBaslik1.ForeColor = SystemColors.GrayText;
+            lblKartBaslik1.ForeColor = Color.FromArgb(184, 154, 124);
             lblKartBaslik1.Name = "lblKartBaslik1";
-            lblKartBaslik1.TabIndex = 13;
+            lblKartBaslik1.TabIndex = 12;
             lblKartBaslik1.Text = "Açık iş";
             // 
             // lblAcikIs
@@ -235,26 +227,27 @@
             lblAcikIs.Location = new Point(10, 34);
             lblAcikIs.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblAcikIs.Name = "lblAcikIs";
-            lblAcikIs.TabIndex = 14;
+            lblAcikIs.TabIndex = 13;
             lblAcikIs.Text = "-";
             // 
             // pnlKart2
             // 
             pnlKart2.Controls.Add(lblKartBaslik2);
             pnlKart2.Controls.Add(lblTeslimBekleyen);
+            pnlKart2.BackColor = Color.FromArgb(43, 26, 16);
             pnlKart2.Location = new Point(412, 84);
             pnlKart2.Name = "pnlKart2";
             pnlKart2.Size = new Size(150, 84);
-            pnlKart2.TabIndex = 15;
+            pnlKart2.TabIndex = 14;
             pnlKart2.Tag = "kart";
             // 
             // lblKartBaslik2
             // 
             lblKartBaslik2.AutoSize = true;
             lblKartBaslik2.Location = new Point(12, 10);
-            lblKartBaslik2.ForeColor = SystemColors.GrayText;
+            lblKartBaslik2.ForeColor = Color.FromArgb(184, 154, 124);
             lblKartBaslik2.Name = "lblKartBaslik2";
-            lblKartBaslik2.TabIndex = 16;
+            lblKartBaslik2.TabIndex = 15;
             lblKartBaslik2.Text = "Teslim bekleyen";
             // 
             // lblTeslimBekleyen
@@ -263,26 +256,27 @@
             lblTeslimBekleyen.Location = new Point(10, 34);
             lblTeslimBekleyen.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblTeslimBekleyen.Name = "lblTeslimBekleyen";
-            lblTeslimBekleyen.TabIndex = 17;
+            lblTeslimBekleyen.TabIndex = 16;
             lblTeslimBekleyen.Text = "-";
             // 
             // pnlKart3
             // 
             pnlKart3.Controls.Add(lblKartBaslik3);
             pnlKart3.Controls.Add(lblBugunAcilan);
+            pnlKart3.BackColor = Color.FromArgb(43, 26, 16);
             pnlKart3.Location = new Point(574, 84);
             pnlKart3.Name = "pnlKart3";
             pnlKart3.Size = new Size(150, 84);
-            pnlKart3.TabIndex = 18;
+            pnlKart3.TabIndex = 17;
             pnlKart3.Tag = "kart";
             // 
             // lblKartBaslik3
             // 
             lblKartBaslik3.AutoSize = true;
             lblKartBaslik3.Location = new Point(12, 10);
-            lblKartBaslik3.ForeColor = SystemColors.GrayText;
+            lblKartBaslik3.ForeColor = Color.FromArgb(184, 154, 124);
             lblKartBaslik3.Name = "lblKartBaslik3";
-            lblKartBaslik3.TabIndex = 19;
+            lblKartBaslik3.TabIndex = 18;
             lblKartBaslik3.Text = "Bugün açılan";
             // 
             // lblBugunAcilan
@@ -291,26 +285,27 @@
             lblBugunAcilan.Location = new Point(10, 34);
             lblBugunAcilan.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblBugunAcilan.Name = "lblBugunAcilan";
-            lblBugunAcilan.TabIndex = 20;
+            lblBugunAcilan.TabIndex = 19;
             lblBugunAcilan.Text = "-";
             // 
             // pnlKart4
             // 
             pnlKart4.Controls.Add(lblKartBaslik4);
             pnlKart4.Controls.Add(lblKritikStok);
+            pnlKart4.BackColor = Color.FromArgb(43, 26, 16);
             pnlKart4.Location = new Point(250, 180);
             pnlKart4.Name = "pnlKart4";
             pnlKart4.Size = new Size(150, 84);
-            pnlKart4.TabIndex = 21;
+            pnlKart4.TabIndex = 20;
             pnlKart4.Tag = "kart";
             // 
             // lblKartBaslik4
             // 
             lblKartBaslik4.AutoSize = true;
             lblKartBaslik4.Location = new Point(12, 10);
-            lblKartBaslik4.ForeColor = SystemColors.GrayText;
+            lblKartBaslik4.ForeColor = Color.FromArgb(184, 154, 124);
             lblKartBaslik4.Name = "lblKartBaslik4";
-            lblKartBaslik4.TabIndex = 22;
+            lblKartBaslik4.TabIndex = 21;
             lblKartBaslik4.Text = "Kritik stoktaki parça";
             // 
             // lblKritikStok
@@ -319,26 +314,27 @@
             lblKritikStok.Location = new Point(10, 34);
             lblKritikStok.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblKritikStok.Name = "lblKritikStok";
-            lblKritikStok.TabIndex = 23;
+            lblKritikStok.TabIndex = 22;
             lblKritikStok.Text = "-";
             // 
             // pnlKart5
             // 
             pnlKart5.Controls.Add(lblKartBaslik5);
             pnlKart5.Controls.Add(lblOdenmemis);
+            pnlKart5.BackColor = Color.FromArgb(43, 26, 16);
             pnlKart5.Location = new Point(412, 180);
             pnlKart5.Name = "pnlKart5";
             pnlKart5.Size = new Size(312, 84);
-            pnlKart5.TabIndex = 24;
+            pnlKart5.TabIndex = 23;
             pnlKart5.Tag = "kart";
             // 
             // lblKartBaslik5
             // 
             lblKartBaslik5.AutoSize = true;
             lblKartBaslik5.Location = new Point(12, 10);
-            lblKartBaslik5.ForeColor = SystemColors.GrayText;
+            lblKartBaslik5.ForeColor = Color.FromArgb(184, 154, 124);
             lblKartBaslik5.Name = "lblKartBaslik5";
-            lblKartBaslik5.TabIndex = 25;
+            lblKartBaslik5.TabIndex = 24;
             lblKartBaslik5.Text = "Ödenmemiş tutar (teslim edilenler)";
             // 
             // lblOdenmemis
@@ -347,23 +343,31 @@
             lblOdenmemis.Location = new Point(10, 34);
             lblOdenmemis.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblOdenmemis.Name = "lblOdenmemis";
-            lblOdenmemis.TabIndex = 26;
+            lblOdenmemis.TabIndex = 25;
             lblOdenmemis.Text = "-";
             // 
             // btnYenile
             // 
+            btnYenile.BackColor = Color.FromArgb(58, 36, 22);
+            btnYenile.Cursor = Cursors.Hand;
+            btnYenile.FlatAppearance.BorderColor = Color.FromArgb(58, 36, 22);
+            btnYenile.FlatAppearance.MouseDownBackColor = Color.FromArgb(181, 128, 79);
+            btnYenile.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 46, 28);
+            btnYenile.FlatStyle = FlatStyle.Flat;
+            btnYenile.ForeColor = Color.FromArgb(243, 230, 214);
             btnYenile.Location = new Point(250, 282);
             btnYenile.Name = "btnYenile";
             btnYenile.Size = new Size(100, 30);
-            btnYenile.TabIndex = 27;
+            btnYenile.TabIndex = 26;
             btnYenile.Text = "Yenile";
-            btnYenile.UseVisualStyleBackColor = true;
+            btnYenile.UseVisualStyleBackColor = false;
             btnYenile.Click += btnYenile_Click;
             // 
             // AnaForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(26, 17, 10);
             ClientSize = new Size(760, 440);
             Controls.Add(btnYenile);
             Controls.Add(pnlKart5);
@@ -376,11 +380,11 @@
             Controls.Add(pnlMenu);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
+            ForeColor = Color.FromArgb(243, 230, 214);
             Name = "AnaForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "vulu İYS";
+            Text = "İşletme adı";
             Load += Form_Load;
-            ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             pnlMenu.ResumeLayout(false);
             pnlMenu.PerformLayout();
             pnlKart1.ResumeLayout(false);
@@ -400,8 +404,7 @@
         #endregion
 
         private Panel pnlMenu;
-        private PictureBox picLogo;
-        private Label lblMarka;
+        private Label lblIsletmeAdi;
         private Label mnuMusteriler;
         private Label mnuServis;
         private Label mnuStok;

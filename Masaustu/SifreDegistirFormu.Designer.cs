@@ -48,6 +48,9 @@
             // 
             // txtEski
             // 
+            txtEski.BackColor = Color.FromArgb(43, 26, 16);
+            txtEski.BorderStyle = BorderStyle.FixedSingle;
+            txtEski.ForeColor = Color.FromArgb(243, 230, 214);
             txtEski.Location = new Point(150, 20);
             txtEski.Name = "txtEski";
             txtEski.Size = new Size(200, 23);
@@ -64,6 +67,9 @@
             // 
             // txtYeni
             // 
+            txtYeni.BackColor = Color.FromArgb(43, 26, 16);
+            txtYeni.BorderStyle = BorderStyle.FixedSingle;
+            txtYeni.ForeColor = Color.FromArgb(243, 230, 214);
             txtYeni.Location = new Point(150, 55);
             txtYeni.Name = "txtYeni";
             txtYeni.Size = new Size(200, 23);
@@ -80,6 +86,9 @@
             // 
             // txtTekrar
             // 
+            txtTekrar.BackColor = Color.FromArgb(43, 26, 16);
+            txtTekrar.BorderStyle = BorderStyle.FixedSingle;
+            txtTekrar.ForeColor = Color.FromArgb(243, 230, 214);
             txtTekrar.Location = new Point(150, 90);
             txtTekrar.Name = "txtTekrar";
             txtTekrar.Size = new Size(200, 23);
@@ -88,24 +97,38 @@
             // 
             // btnKaydet
             // 
+            btnKaydet.BackColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.Cursor = Cursors.Hand;
+            btnKaydet.FlatAppearance.BorderColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.FlatAppearance.MouseDownBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatAppearance.MouseOverBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatStyle = FlatStyle.Flat;
+            btnKaydet.ForeColor = Color.FromArgb(26, 17, 10);
             btnKaydet.Location = new Point(140, 140);
             btnKaydet.Name = "btnKaydet";
             btnKaydet.Size = new Size(100, 32);
             btnKaydet.TabIndex = 6;
             btnKaydet.Tag = "ana";
             btnKaydet.Text = "Kaydet";
-            btnKaydet.UseVisualStyleBackColor = true;
+            btnKaydet.UseVisualStyleBackColor = false;
             btnKaydet.Click += btnKaydet_Click;
             // 
             // btnVazgec
             // 
+            btnVazgec.BackColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.Cursor = Cursors.Hand;
             btnVazgec.DialogResult = DialogResult.Cancel;
+            btnVazgec.FlatAppearance.BorderColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.FlatAppearance.MouseDownBackColor = Color.FromArgb(181, 128, 79);
+            btnVazgec.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 46, 28);
+            btnVazgec.FlatStyle = FlatStyle.Flat;
+            btnVazgec.ForeColor = Color.FromArgb(243, 230, 214);
             btnVazgec.Location = new Point(250, 140);
             btnVazgec.Name = "btnVazgec";
             btnVazgec.Size = new Size(100, 32);
             btnVazgec.TabIndex = 7;
             btnVazgec.Text = "Vazgeç";
-            btnVazgec.UseVisualStyleBackColor = true;
+            btnVazgec.UseVisualStyleBackColor = false;
             // 
             // SifreDegistirFormu
             // 
@@ -113,6 +136,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnVazgec;
+            BackColor = Color.FromArgb(26, 17, 10);
             ClientSize = new Size(380, 190);
             Controls.Add(btnVazgec);
             Controls.Add(btnKaydet);
@@ -125,6 +149,7 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            ForeColor = Color.FromArgb(243, 230, 214);
             Name = "SifreDegistirFormu";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Şifre değiştir";

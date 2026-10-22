@@ -18,6 +18,24 @@ namespace Masaustu
         // Giriş yapan kullanıcı. Giriş yapılmadan önce null'dır.
         public static Kullanici? Ben { get; private set; }
 
+        // Programı kullanan işletmenin adı; giriş ekranında ve menüde görünür.
+        public static string IsletmeAdi { get; private set; } = "";
+
+        // İşletmenin adını API'den öğrenir. API'ye ulaşılamazsa boş kalır, hata göstermez;
+        // bağlantı sorunu kullanıcı "Giriş yap"a basınca söylenir.
+        public static async Task IsletmeAdiniGetir()
+        {
+            try
+            {
+                IsletmeBilgisi bilgi = await Getir<IsletmeBilgisi>("api/isletme");
+                IsletmeAdi = bilgi.Ad;
+            }
+            catch
+            {
+                IsletmeAdi = "";
+            }
+        }
+
         public static async Task GirisYap(string kullaniciAdi, string sifre)
         {
             var istek = new GirisIstegi { KullaniciAdi = kullaniciAdi, Sifre = sifre };

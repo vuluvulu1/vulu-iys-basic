@@ -6,7 +6,21 @@ namespace Masaustu
         {
             InitializeComponent();
             Tema.Uygula(this);
-            picLogo.Image = Tema.LogoResmi(48);
+            picLogo.Image = Tema.LogoResmi(16);
+        }
+
+        private async void Form_Load(object sender, EventArgs e)
+        {
+            await Api.IsletmeAdiniGetir();
+            if (Api.IsletmeAdi != "")
+            {
+                lblIsletmeAdi.Text = Api.IsletmeAdi;
+                Text = Api.IsletmeAdi + " - Giriş";
+            }
+            else
+            {
+                lblIsletmeAdi.Text = "Giriş";
+            }
         }
 
         private async void btnGiris_Click(object sender, EventArgs e)

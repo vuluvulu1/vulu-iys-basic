@@ -3,7 +3,7 @@ using Modeller;
 namespace Masaustu
 {
     // Servis kaydını açma ve düzenleme penceresi.
-    // Solda kaydın bilgileri, sağda üç sekme var: kullanılan parçalar, fiyat teklifi ve işlem geçmişi.
+    // Solda kaydın bilgileri, sağda iki sekme var: kullanılan parçalar ve işlem geçmişi.
     public partial class ServisKaydiFormu : Form
     {
         // Yeni kayıtta null'dır; kaydedilince dolar ve sağdaki bölümler açılır.
@@ -134,10 +134,9 @@ namespace Masaustu
             // Kayıt açıldıktan sonra müşterisi değiştirilemez.
             cmbMusteri.Enabled = kayitId == null;
 
-            // Parça, teklif, geçmiş ve formlar için kaydın veritabanında olması gerekir.
+            // Parça, geçmiş ve formlar için kaydın veritabanında olması gerekir.
             bool kayitli = kayitId != null;
             btnSekmeParcalar.Enabled = kayitli;
-            btnSekmeTeklif.Enabled = kayitli;
             btnSekmeGecmis.Enabled = kayitli;
             btnKabulFormu.Enabled = kayitli;
             btnTeslimFormu.Enabled = kayitli;
@@ -150,22 +149,19 @@ namespace Masaustu
             else
             {
                 pnlParcalar.Visible = false;
-                pnlTeklif.Visible = false;
                 pnlGecmis.Visible = false;
             }
 
             ParcalariGoster();
-            TeklifiGoster();
         }
 
-        // Sağ taraftaki üç panelden yalnızca birini gösterir; seçili sekmenin butonu vurgulanır.
+        // Sağ taraftaki iki panelden yalnızca birini gösterir; seçili sekmenin butonu vurgulanır.
         private void SekmeyiAc(Panel panel, Button buton)
         {
             pnlParcalar.Visible = panel == pnlParcalar;
-            pnlTeklif.Visible = panel == pnlTeklif;
             pnlGecmis.Visible = panel == pnlGecmis;
 
-            foreach (Button sekme in new[] { btnSekmeParcalar, btnSekmeTeklif, btnSekmeGecmis })
+            foreach (Button sekme in new[] { btnSekmeParcalar, btnSekmeGecmis })
             {
                 sekme.BackColor = Tema.Kutu;
                 sekme.ForeColor = Tema.Yazi;
@@ -177,11 +173,6 @@ namespace Masaustu
         private void btnSekmeParcalar_Click(object sender, EventArgs e)
         {
             SekmeyiAc(pnlParcalar, btnSekmeParcalar);
-        }
-
-        private void btnSekmeTeklif_Click(object sender, EventArgs e)
-        {
-            SekmeyiAc(pnlTeklif, btnSekmeTeklif);
         }
 
         private void btnSekmeGecmis_Click(object sender, EventArgs e)
@@ -211,55 +202,6 @@ namespace Masaustu
             ToplamiGoster();
         }
 
-        private void TeklifiGoster()
-        {
-            Teklif? teklif = kayit.Teklif;
-            if (teklif == null)
-            {
-                lblTeklifDurumu.Text = "Henüz teklif verilmedi";
-                lblTeklifDurumu.ForeColor = Tema.Yazi;
-                lblTeklifBilgi.Text = "Teklif verilince kayıt \"Onay bekliyor\" olur.";
-                CevapBolumunuGoster(false);
-                return;
-            }
-
-            lblTeklifDurumu.Text = "Teklif: " + Yardimci.Para(teklif.Tutar) + "  -  " + teklif.Durum;
-            lblTeklifBilgi.Text = "Verildi: " + Yardimci.Tarih(teklif.Tarih);
-            if (teklif.YanitTarihi != null)
-            {
-                lblTeklifBilgi.Text += "   Cevap: " + Yardimci.Tarih(teklif.YanitTarihi.Value);
-            }
-
-            if (teklif.Durum == TeklifDurumlari.Onaylandi)
-            {
-                lblTeklifDurumu.ForeColor = Tema.Yesil;
-            }
-            else if (teklif.Durum == TeklifDurumlari.Reddedildi)
-            {
-                lblTeklifDurumu.ForeColor = Tema.Kirmizi;
-            }
-            else
-            {
-                lblTeklifDurumu.ForeColor = Tema.VurguAcik;
-            }
-
-            nudTeklifTutar.Value = teklif.Tutar;
-            txtTeklifAciklama.Text = teklif.Aciklama;
-
-            // Müşterinin cevabı yalnızca cevap bekleyen teklif için girilir.
-            CevapBolumunuGoster(teklif.Durum == TeklifDurumlari.Bekliyor);
-        }
-
-        private void CevapBolumunuGoster(bool goster)
-        {
-            lblCevapBasligi.Visible = goster;
-            lblYanitNotu.Visible = goster;
-            txtYanitNotu.Visible = goster;
-            btnOnayladi.Visible = goster;
-            btnReddetti.Visible = goster;
-            lblCevapIpucu.Visible = goster;
-        }
-
         private async Task GecmisiYukle()
         {
             if (kayitId == null)
@@ -276,18 +218,14 @@ namespace Masaustu
             dgvGecmis.ClearSelection();
         }
 
-        // Parça, teklif ya da not işleminden sonra kaydı API'den yeniden okur.
+        // Parça işleminden sonra kaydı API'den yeniden okur.
         // Soldaki kutulara dokunmaz; böylece yazılıp henüz kaydedilmemiş bilgiler kaybolmaz.
         private async Task KaydiTazele()
         {
             ServisKaydi guncel = await Api.Getir<ServisKaydi>("api/servis-kayitlari/" + kayitId);
             kayit.Parcalar = guncel.Parcalar;
-            kayit.Teklif = guncel.Teklif;
-            kayit.Durum = guncel.Durum;
-            cmbDurum.Text = guncel.Durum;
 
             ParcalariGoster();
-            TeklifiGoster();
             await GecmisiYukle();
         }
 
@@ -317,7 +255,7 @@ namespace Masaustu
                 {
                     kayit = await Api.Gonder<ServisKaydi>("api/servis-kayitlari", kayit);
                     kayitId = kayit.Id;
-                    MessageBox.Show(kayit.No + " numaralı kayıt açıldı. Şimdi parça ekleyebilir, teklif verebilir ya da kabul formunu yazdırabilirsiniz.");
+                    MessageBox.Show(kayit.No + " numaralı kayıt açıldı. Şimdi parça ekleyebilir ya da kabul formunu yazdırabilirsiniz.");
                 }
                 else
                 {
@@ -389,55 +327,6 @@ namespace Masaustu
             if (seciliSira < cmbParca.Items.Count)
             {
                 cmbParca.SelectedIndex = seciliSira;
-            }
-        }
-
-        private async void btnTeklifVer_Click(object sender, EventArgs e)
-        {
-            if (nudTeklifTutar.Value <= 0)
-            {
-                MessageBox.Show("Teklif tutarını yazın.");
-                return;
-            }
-
-            var istek = new TeklifIstegi { Tutar = nudTeklifTutar.Value, Aciklama = txtTeklifAciklama.Text };
-            try
-            {
-                await Api.Gonder("api/servis-kayitlari/" + kayitId + "/teklif", istek);
-                await KaydiTazele();
-            }
-            catch (Exception hata)
-            {
-                Yardimci.Hata(hata);
-            }
-        }
-
-        private async void btnOnayladi_Click(object sender, EventArgs e)
-        {
-            await TeklifeCevapVer(true);
-        }
-
-        private async void btnReddetti_Click(object sender, EventArgs e)
-        {
-            if (!Yardimci.Onayla("Müşteri teklifi reddetti mi? Kayıt \"İptal edildi\" olacak."))
-            {
-                return;
-            }
-            await TeklifeCevapVer(false);
-        }
-
-        private async Task TeklifeCevapVer(bool onaylandi)
-        {
-            var istek = new TeklifYanitIstegi { Onaylandi = onaylandi, Not = txtYanitNotu.Text };
-            try
-            {
-                await Api.Gonder("api/servis-kayitlari/" + kayitId + "/teklif/yanit", istek);
-                txtYanitNotu.Clear();
-                await KaydiTazele();
-            }
-            catch (Exception hata)
-            {
-                Yardimci.Hata(hata);
             }
         }
 
@@ -519,11 +408,6 @@ namespace Masaustu
         {
             string giris = "Merhaba " + kayit.MusteriAdi + ", " + kayit.No + " numaralı kayıttaki " + kayit.Cihaz + " cihazınız ";
 
-            if (kayit.Durum == ServisDurumlari.OnayBekliyor && kayit.Teklif != null)
-            {
-                return giris + "için fiyat teklifimiz " + Yardimci.Para(kayit.Teklif.Tutar)
-                    + ". Onaylıyorsanız bize bildirmeniz yeterli, tamire hemen başlayalım.";
-            }
             if (kayit.Durum == ServisDurumlari.DevamEdiyor)
             {
                 return giris + "üzerinde çalışıyoruz. Hazır olduğunda size haber vereceğiz.";

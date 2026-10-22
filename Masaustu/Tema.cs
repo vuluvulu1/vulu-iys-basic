@@ -4,8 +4,12 @@ using Modeller;
 namespace Masaustu
 {
     // Programın renkleri. vulu İYS'nin koyu kahve paletiyle aynıdır.
-    // Her form kurucusunda InitializeComponent()'ten sonra Tema.Uygula(this) çağrılır;
-    // böylece tasarımcıda renkleri tek tek seçmek gerekmez, hepsi buradan değişir.
+    // Formlardaki renkler tasarımcıda (Designer.cs) verilir; buradaki sabitler kodun içinde renk
+    // gerektiğinde kullanılır (örn. kritik stok satırı). Tasarımcıda bir rengi değiştirirsen burada da değiştir.
+    //
+    // Her form kurucusunda InitializeComponent()'ten sonra Tema.Uygula(this) çağrılır.
+    // Uygula yalnızca tasarımcının yapamadığı işleri yapar: pencere simgesi, koyu başlık çubuğu,
+    // sol menüde fare üstüne gelince renk değişimi ve pasif butonların soluk görünmesi.
     public static class Tema
     {
         public static readonly Color Arka = ColorTranslator.FromHtml("#1a110a");
@@ -26,18 +30,16 @@ namespace Masaustu
 
         public static void Uygula(Form form)
         {
-            form.BackColor = Arka;
-            form.ForeColor = Yazi;
             form.Icon = Logo();
             form.HandleCreated += KoyuBaslikCubugu;
 
             foreach (Control kontrol in form.Controls)
             {
-                KontroluBoya(kontrol);
+                OlaylariBagla(kontrol);
             }
         }
 
-        // Pencere simgesi ve menüdeki logo için. Dosya programın yanına kopyalanır (bkz. Masaustu.csproj).
+        // Pencere simgesi ve giriş ekranındaki küçük logo için. Dosya programın yanına kopyalanır (bkz. Masaustu.csproj).
         public static Icon Logo()
         {
             if (logo == null)
@@ -55,67 +57,54 @@ namespace Masaustu
         // Servis kaydının durumunu listede renkli göstermek için.
         public static Color DurumRengi(string durum)
         {
-            if (durum == ServisDurumlari.OnayBekliyor) return VurguAcik;
             if (durum == ServisDurumlari.DevamEdiyor) return Mavi;
             if (durum == ServisDurumlari.Tamamlandi) return Yesil;
             if (durum == ServisDurumlari.IptalEdildi) return Kirmizi;
             return Yazi;
         }
 
-        private static void KontroluBoya(Control kontrol)
+        private static void OlaylariBagla(Control kontrol)
         {
             if (kontrol is Button buton)
             {
-                ButonuBoya(buton);
-            }
-            else if (kontrol is TextBox yaziKutusu)
-            {
-                yaziKutusu.BackColor = Yuzey;
-                yaziKutusu.ForeColor = Yazi;
-                yaziKutusu.BorderStyle = BorderStyle.FixedSingle;
-            }
-            else if (kontrol is ComboBox acilirListe)
-            {
-                acilirListe.FlatStyle = FlatStyle.Flat;
-                acilirListe.BackColor = Yuzey;
-                acilirListe.ForeColor = Yazi;
-            }
-            else if (kontrol is NumericUpDown sayiKutusu)
-            {
-                sayiKutusu.BackColor = Yuzey;
-                sayiKutusu.ForeColor = Yazi;
-                sayiKutusu.BorderStyle = BorderStyle.FixedSingle;
-            }
-            else if (kontrol is DateTimePicker tarihKutusu)
-            {
-                tarihKutusu.CalendarMonthBackground = Yuzey;
-                tarihKutusu.CalendarForeColor = Yazi;
-            }
-            else if (kontrol is DataGridView tablo)
-            {
-                TabloyuBoya(tablo);
+                buton.EnabledChanged += ButonEtkinligiDegisti;
             }
             else if (kontrol is Label menuOgesi && menuOgesi.Tag as string == "menu")
             {
-                // Ana penceredeki sol menü: fare üstüne gelince öğenin zemini açılır.
                 menuOgesi.MouseEnter += MenuOgesiUzerinde;
                 menuOgesi.MouseLeave += MenuOgesiDisinda;
             }
-            else if (kontrol is Label etiket && etiket.ForeColor == SystemColors.GrayText)
-            {
-                // Tasarımcıda gri seçilen açıklama yazıları.
-                etiket.ForeColor = SolukYazi;
-            }
-            else if (kontrol is Panel panel && panel.Tag != null)
-            {
-                // Tag'i "kart" ya da "menu" olan paneller zeminden biraz açık durur.
-                panel.BackColor = Yuzey;
-            }
 
-            // Kutu ve panellerin içindeki kontrolleri de boya.
+            // Panellerin içindeki kontrollere de bak.
             foreach (Control icerdeki in kontrol.Controls)
             {
-                KontroluBoya(icerdeki);
+                OlaylariBagla(icerdeki);
+            }
+        }
+
+        // Windows koyu modda pasif butonu da aktif gibi çizdiği için rengini biz soldururuz.
+        // Buton yeniden aktif olunca Tag'ine göre rengi geri verilir: "ana" = bakır buton, boş = normal buton.
+        private static void ButonEtkinligiDegisti(object? sender, EventArgs e)
+        {
+            if (sender is not Button buton)
+            {
+                return;
+            }
+
+            if (!buton.Enabled)
+            {
+                buton.BackColor = Yuzey;
+                buton.ForeColor = PasifYazi;
+            }
+            else if (buton.Tag as string == "ana")
+            {
+                buton.BackColor = Vurgu;
+                buton.ForeColor = Arka;
+            }
+            else
+            {
+                buton.BackColor = Kutu;
+                buton.ForeColor = Yazi;
             }
         }
 
@@ -133,77 +122,6 @@ namespace Masaustu
             {
                 menuOgesi.BackColor = Yuzey;
             }
-        }
-
-        // Tag ile butonun türü seçilir: "ana" = öne çıkan buton, boş = normal buton.
-        private static void ButonuBoya(Button buton)
-        {
-            // Buton pasif olunca soluk görünsün diye; iki kere bağlanmasın diye önce çıkarılır.
-            buton.EnabledChanged -= ButonEtkinligiDegisti;
-            buton.EnabledChanged += ButonEtkinligiDegisti;
-
-            if (!buton.Enabled)
-            {
-                buton.BackColor = Yuzey;
-                buton.ForeColor = PasifYazi;
-                return;
-            }
-
-            buton.FlatStyle = FlatStyle.Flat;
-            buton.Cursor = Cursors.Hand;
-            buton.FlatAppearance.BorderSize = 1;
-            string tur = buton.Tag as string ?? "";
-
-            if (tur == "ana")
-            {
-                buton.BackColor = Vurgu;
-                buton.ForeColor = Arka;
-                buton.FlatAppearance.BorderColor = Vurgu;
-                buton.FlatAppearance.MouseOverBackColor = VurguAcik;
-                buton.FlatAppearance.MouseDownBackColor = VurguAcik;
-            }
-            else
-            {
-                buton.BackColor = Kutu;
-                buton.ForeColor = Yazi;
-                buton.FlatAppearance.BorderColor = Kutu;
-                buton.FlatAppearance.MouseOverBackColor = Cizgi;
-                buton.FlatAppearance.MouseDownBackColor = Vurgu;
-            }
-        }
-
-        private static void ButonEtkinligiDegisti(object? sender, EventArgs e)
-        {
-            if (sender is Button buton)
-            {
-                ButonuBoya(buton);
-            }
-        }
-
-        private static void TabloyuBoya(DataGridView tablo)
-        {
-            tablo.BackgroundColor = Arka;
-            tablo.BorderStyle = BorderStyle.None;
-            tablo.GridColor = Cizgi;
-            tablo.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            tablo.RowTemplate.Height = 28;
-
-            // Başlık satırının Windows görünümü yerine bizim renklerimizi kullanması için.
-            tablo.EnableHeadersVisualStyles = false;
-            tablo.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            tablo.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            tablo.ColumnHeadersHeight = 32;
-            tablo.ColumnHeadersDefaultCellStyle.BackColor = Yuzey;
-            tablo.ColumnHeadersDefaultCellStyle.ForeColor = SolukYazi;
-            tablo.ColumnHeadersDefaultCellStyle.SelectionBackColor = Yuzey;
-            tablo.ColumnHeadersDefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
-
-            tablo.DefaultCellStyle.BackColor = Arka;
-            tablo.DefaultCellStyle.ForeColor = Yazi;
-            tablo.DefaultCellStyle.SelectionBackColor = Cizgi;
-            tablo.DefaultCellStyle.SelectionForeColor = Yazi;
-            tablo.DefaultCellStyle.Padding = new Padding(4, 0, 4, 0);
-            tablo.AlternatingRowsDefaultCellStyle.BackColor = ColorTranslator.FromHtml("#211509");
         }
 
         // Windows 10/11'de pencerenin başlık çubuğunu da koyu yapar. Eski Windows'ta etkisi olmaz.

@@ -28,6 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
             lblBaslangic = new Label();
             dtpBaslangic = new DateTimePicker();
             lblBitis = new Label();
@@ -59,6 +65,8 @@
             // 
             // dtpBaslangic
             // 
+            dtpBaslangic.CalendarForeColor = Color.FromArgb(243, 230, 214);
+            dtpBaslangic.CalendarMonthBackground = Color.FromArgb(43, 26, 16);
             dtpBaslangic.Format = DateTimePickerFormat.Short;
             dtpBaslangic.Location = new Point(100, 15);
             dtpBaslangic.Name = "dtpBaslangic";
@@ -75,6 +83,8 @@
             // 
             // dtpBitis
             // 
+            dtpBitis.CalendarForeColor = Color.FromArgb(243, 230, 214);
+            dtpBitis.CalendarMonthBackground = Color.FromArgb(43, 26, 16);
             dtpBitis.Format = DateTimePickerFormat.Short;
             dtpBitis.Location = new Point(300, 15);
             dtpBitis.Name = "dtpBitis";
@@ -83,13 +93,20 @@
             // 
             // btnGoster
             // 
+            btnGoster.BackColor = Color.FromArgb(181, 128, 79);
+            btnGoster.Cursor = Cursors.Hand;
+            btnGoster.FlatAppearance.BorderColor = Color.FromArgb(181, 128, 79);
+            btnGoster.FlatAppearance.MouseDownBackColor = Color.FromArgb(233, 198, 153);
+            btnGoster.FlatAppearance.MouseOverBackColor = Color.FromArgb(233, 198, 153);
+            btnGoster.FlatStyle = FlatStyle.Flat;
+            btnGoster.ForeColor = Color.FromArgb(26, 17, 10);
             btnGoster.Location = new Point(480, 14);
             btnGoster.Name = "btnGoster";
             btnGoster.Size = new Size(140, 25);
             btnGoster.TabIndex = 4;
             btnGoster.Tag = "ana";
             btnGoster.Text = "Göster";
-            btnGoster.UseVisualStyleBackColor = true;
+            btnGoster.UseVisualStyleBackColor = false;
             btnGoster.Click += btnGoster_Click;
             // 
             // pnlGenel
@@ -100,6 +117,7 @@
             pnlGenel.Controls.Add(lblToplamTutar);
             pnlGenel.Controls.Add(lblTahsil);
             pnlGenel.Controls.Add(lblKalan);
+            pnlGenel.BackColor = Color.FromArgb(43, 26, 16);
             pnlGenel.Location = new Point(20, 55);
             pnlGenel.Name = "pnlGenel";
             pnlGenel.Size = new Size(600, 100);
@@ -165,8 +183,37 @@
             // 
             // dgvTeknisyenler
             // 
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(33, 21, 9);
+            dgvTeknisyenler.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
             dgvTeknisyenler.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            dgvTeknisyenler.BackgroundColor = Color.FromArgb(26, 17, 10);
+            dgvTeknisyenler.BorderStyle = BorderStyle.None;
+            dgvTeknisyenler.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvTeknisyenler.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(43, 26, 16);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = Color.FromArgb(184, 154, 124);
+            dataGridViewCellStyle1.Padding = new Padding(4, 0, 4, 0);
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(43, 26, 16);
+            dataGridViewCellStyle1.SelectionForeColor = Color.FromArgb(184, 154, 124);
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dgvTeknisyenler.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dgvTeknisyenler.ColumnHeadersHeight = 32;
+            dgvTeknisyenler.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(26, 17, 10);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = Color.FromArgb(243, 230, 214);
+            dataGridViewCellStyle2.Padding = new Padding(4, 0, 4, 0);
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(74, 46, 28);
+            dataGridViewCellStyle2.SelectionForeColor = Color.FromArgb(243, 230, 214);
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            dgvTeknisyenler.DefaultCellStyle = dataGridViewCellStyle2;
+            dgvTeknisyenler.EnableHeadersVisualStyles = false;
+            dgvTeknisyenler.GridColor = Color.FromArgb(74, 46, 28);
             dgvTeknisyenler.Location = new Point(20, 194);
+            dgvTeknisyenler.RowTemplate.Height = 28;
             dgvTeknisyenler.Name = "dgvTeknisyenler";
             dgvTeknisyenler.Size = new Size(600, 130);
             dgvTeknisyenler.TabIndex = 13;
@@ -182,8 +229,37 @@
             // 
             // dgvParcalar
             // 
+            dataGridViewCellStyle6.BackColor = Color.FromArgb(33, 21, 9);
+            dgvParcalar.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             dgvParcalar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            dgvParcalar.BackgroundColor = Color.FromArgb(26, 17, 10);
+            dgvParcalar.BorderStyle = BorderStyle.None;
+            dgvParcalar.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvParcalar.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = Color.FromArgb(43, 26, 16);
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.ForeColor = Color.FromArgb(184, 154, 124);
+            dataGridViewCellStyle4.Padding = new Padding(4, 0, 4, 0);
+            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(43, 26, 16);
+            dataGridViewCellStyle4.SelectionForeColor = Color.FromArgb(184, 154, 124);
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
+            dgvParcalar.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dgvParcalar.ColumnHeadersHeight = 32;
+            dgvParcalar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = Color.FromArgb(26, 17, 10);
+            dataGridViewCellStyle5.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle5.ForeColor = Color.FromArgb(243, 230, 214);
+            dataGridViewCellStyle5.Padding = new Padding(4, 0, 4, 0);
+            dataGridViewCellStyle5.SelectionBackColor = Color.FromArgb(74, 46, 28);
+            dataGridViewCellStyle5.SelectionForeColor = Color.FromArgb(243, 230, 214);
+            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.False;
+            dgvParcalar.DefaultCellStyle = dataGridViewCellStyle5;
+            dgvParcalar.EnableHeadersVisualStyles = false;
+            dgvParcalar.GridColor = Color.FromArgb(74, 46, 28);
             dgvParcalar.Location = new Point(20, 362);
+            dgvParcalar.RowTemplate.Height = 28;
             dgvParcalar.Name = "dgvParcalar";
             dgvParcalar.Size = new Size(600, 140);
             dgvParcalar.TabIndex = 15;
@@ -192,6 +268,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(26, 17, 10);
             ClientSize = new Size(640, 520);
             Controls.Add(dgvParcalar);
             Controls.Add(lblParcalar);
@@ -206,6 +283,7 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            ForeColor = Color.FromArgb(243, 230, 214);
             Name = "RaporFormu";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Raporlar";

@@ -6,25 +6,12 @@ using QuestPDF.Infrastructure;
 namespace Api;
 
 // Servis kabul formu (cihaz alınırken) ve teslim formu (cihaz verilirken) PDF olarak üretilir.
-// İşletmenin adı, adresi ve kabul koşulları appsettings.json içindeki "Isletme" bölümünden okunur.
+// İşletmenin adı, adresi ve kabul koşulları Isletme sınıfından gelir.
 public static class ServisFormu
 {
-    private static string isletmeAdi = "";
-    private static string isletmeAdresi = "";
-    private static string isletmeTelefonu = "";
-    private static string servisKosullari = "";
-
     private const string Kahve = "#5a3923";
     private const string Bakir = "#b5804f";
     private const string Gri = "#777777";
-
-    public static void AyarlariOku(IConfiguration ayarlar)
-    {
-        isletmeAdi = ayarlar["Isletme:Ad"] ?? "";
-        isletmeAdresi = ayarlar["Isletme:Adres"] ?? "";
-        isletmeTelefonu = ayarlar["Isletme:Telefon"] ?? "";
-        servisKosullari = ayarlar["Isletme:ServisKosullari"] ?? "";
-    }
 
     public static byte[] Olustur(ServisKaydi kayit, bool teslimFormu)
     {
@@ -68,7 +55,7 @@ public static class ServisFormu
 
                 sayfa.Footer().AlignCenter().Text(yazi =>
                 {
-                    yazi.Span(isletmeAdi + "  •  " + kayit.No).FontSize(8).FontColor(Gri);
+                    yazi.Span(Isletme.Ad + "  •  " + kayit.No).FontSize(8).FontColor(Gri);
                 });
             });
         });
@@ -82,9 +69,9 @@ public static class ServisFormu
         {
             satir.RelativeItem().Column(sol =>
             {
-                sol.Item().Text(isletmeAdi).FontSize(16).Bold().FontColor(Kahve);
-                sol.Item().Text(isletmeAdresi).FontSize(9).FontColor(Gri);
-                sol.Item().Text(isletmeTelefonu).FontSize(9).FontColor(Gri);
+                sol.Item().Text(Isletme.Ad).FontSize(16).Bold().FontColor(Kahve);
+                sol.Item().Text(Isletme.Adres).FontSize(9).FontColor(Gri);
+                sol.Item().Text(Isletme.Telefon).FontSize(9).FontColor(Gri);
             });
 
             satir.ConstantItem(200).AlignRight().Column(sag =>
@@ -100,16 +87,8 @@ public static class ServisFormu
     {
         Satir(sutun, "Kabul tarihi", TurkiyeSaati(kayit.AcilisTarihi));
 
-        if (kayit.Teklif != null)
-        {
-            Bolum(sutun, "Fiyat teklifi");
-            Satir(sutun, "Tutar", Para(kayit.Teklif.Tutar));
-            Satir(sutun, "Açıklama", kayit.Teklif.Aciklama);
-            Satir(sutun, "Durum", kayit.Teklif.Durum);
-        }
-
         Bolum(sutun, "Servis koşulları");
-        sutun.Item().Text(servisKosullari).FontSize(9).FontColor(Gri);
+        sutun.Item().Text(Isletme.ServisKosullari).FontSize(9).FontColor(Gri);
     }
 
     private static void TeslimBilgileri(ColumnDescriptor sutun, ServisKaydi kayit)

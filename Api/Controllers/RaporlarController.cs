@@ -22,8 +22,7 @@ public class RaporlarController : ControllerBase
         var ozet = new Ozet();
         foreach (ServisKaydi kayit in kayitlar)
         {
-            if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.OnayBekliyor
-                || kayit.Durum == ServisDurumlari.DevamEdiyor)
+            if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.DevamEdiyor)
             {
                 ozet.AcikIsSayisi++;
             }

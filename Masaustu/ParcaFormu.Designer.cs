@@ -55,6 +55,9 @@
             // 
             // txtAd
             // 
+            txtAd.BackColor = Color.FromArgb(43, 26, 16);
+            txtAd.BorderStyle = BorderStyle.FixedSingle;
+            txtAd.ForeColor = Color.FromArgb(243, 230, 214);
             txtAd.Location = new Point(130, 20);
             txtAd.Name = "txtAd";
             txtAd.Size = new Size(240, 23);
@@ -70,6 +73,9 @@
             // 
             // txtKod
             // 
+            txtKod.BackColor = Color.FromArgb(43, 26, 16);
+            txtKod.BorderStyle = BorderStyle.FixedSingle;
+            txtKod.ForeColor = Color.FromArgb(243, 230, 214);
             txtKod.Location = new Point(130, 55);
             txtKod.Name = "txtKod";
             txtKod.Size = new Size(240, 23);
@@ -85,6 +91,9 @@
             // 
             // nudFiyat
             // 
+            nudFiyat.BackColor = Color.FromArgb(43, 26, 16);
+            nudFiyat.BorderStyle = BorderStyle.FixedSingle;
+            nudFiyat.ForeColor = Color.FromArgb(243, 230, 214);
             nudFiyat.DecimalPlaces = 2;
             nudFiyat.Location = new Point(130, 90);
             nudFiyat.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
@@ -103,6 +112,9 @@
             // 
             // nudStok
             // 
+            nudStok.BackColor = Color.FromArgb(43, 26, 16);
+            nudStok.BorderStyle = BorderStyle.FixedSingle;
+            nudStok.ForeColor = Color.FromArgb(243, 230, 214);
             nudStok.Location = new Point(130, 125);
             nudStok.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             nudStok.Name = "nudStok";
@@ -119,6 +131,9 @@
             // 
             // nudKritik
             // 
+            nudKritik.BackColor = Color.FromArgb(43, 26, 16);
+            nudKritik.BorderStyle = BorderStyle.FixedSingle;
+            nudKritik.ForeColor = Color.FromArgb(243, 230, 214);
             nudKritik.Location = new Point(130, 160);
             nudKritik.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             nudKritik.Name = "nudKritik";
@@ -127,24 +142,38 @@
             // 
             // btnKaydet
             // 
+            btnKaydet.BackColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.Cursor = Cursors.Hand;
+            btnKaydet.FlatAppearance.BorderColor = Color.FromArgb(181, 128, 79);
+            btnKaydet.FlatAppearance.MouseDownBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatAppearance.MouseOverBackColor = Color.FromArgb(233, 198, 153);
+            btnKaydet.FlatStyle = FlatStyle.Flat;
+            btnKaydet.ForeColor = Color.FromArgb(26, 17, 10);
             btnKaydet.Location = new Point(160, 205);
             btnKaydet.Name = "btnKaydet";
             btnKaydet.Size = new Size(100, 32);
             btnKaydet.TabIndex = 10;
             btnKaydet.Tag = "ana";
             btnKaydet.Text = "Kaydet";
-            btnKaydet.UseVisualStyleBackColor = true;
+            btnKaydet.UseVisualStyleBackColor = false;
             btnKaydet.Click += btnKaydet_Click;
             // 
             // btnVazgec
             // 
+            btnVazgec.BackColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.Cursor = Cursors.Hand;
             btnVazgec.DialogResult = DialogResult.Cancel;
+            btnVazgec.FlatAppearance.BorderColor = Color.FromArgb(58, 36, 22);
+            btnVazgec.FlatAppearance.MouseDownBackColor = Color.FromArgb(181, 128, 79);
+            btnVazgec.FlatAppearance.MouseOverBackColor = Color.FromArgb(74, 46, 28);
+            btnVazgec.FlatStyle = FlatStyle.Flat;
+            btnVazgec.ForeColor = Color.FromArgb(243, 230, 214);
             btnVazgec.Location = new Point(270, 205);
             btnVazgec.Name = "btnVazgec";
             btnVazgec.Size = new Size(100, 32);
             btnVazgec.TabIndex = 11;
             btnVazgec.Text = "Vazgeç";
-            btnVazgec.UseVisualStyleBackColor = true;
+            btnVazgec.UseVisualStyleBackColor = false;
             // 
             // ParcaFormu
             // 
@@ -152,6 +181,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnVazgec;
+            BackColor = Color.FromArgb(26, 17, 10);
             ClientSize = new Size(400, 250);
             Controls.Add(btnVazgec);
             Controls.Add(btnKaydet);
@@ -168,6 +198,7 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
+            ForeColor = Color.FromArgb(243, 230, 214);
             Name = "ParcaFormu";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Parça";

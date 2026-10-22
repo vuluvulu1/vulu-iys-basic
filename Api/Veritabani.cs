@@ -1,4 +1,5 @@
 using Modeller;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
 namespace Api;
@@ -18,6 +19,11 @@ public static class Veritabani
         string baglantiDizesi = ayarlar["Mongo:BaglantiDizesi"] ?? "mongodb://localhost:27017";
         string veritabaniAdi = ayarlar["Mongo:VeritabaniAdi"] ?? "vulu_basic";
 
+        // Modelden bir alan kaldırılsa bile veritabanındaki eski kayıtlar okunabilsin:
+        // belgede sınıfta olmayan bir alan varsa hata verme, o alanı görmezden gel.
+        var kurallar = new ConventionPack { new IgnoreExtraElementsConvention(true) };
+        ConventionRegistry.Register("FazlaAlanlariYokSay", kurallar, _ => true);
+
         var istemci = new MongoClient(baglantiDizesi);
         var veritabani = istemci.GetDatabase(veritabaniAdi);
 
@@ -27,6 +33,11 @@ public static class Veritabani
         Parcalar = veritabani.GetCollection<Parca>("parcalar");
         Sayaclar = veritabani.GetCollection<Sayac>("sayaclar");
         IslemGecmisi = veritabani.GetCollection<IslemKaydi>("islemGecmisi");
+
+        // Fiyat teklifi özelliği kaldırıldı; "Onay bekliyor" durumunda kalmış kayıtlar "Beklemede"ye alınır.
+        await ServisKayitlari.UpdateManyAsync(
+            s => s.Durum == "Onay bekliyor",
+            Builders<ServisKaydi>.Update.Set(s => s.Durum, ServisDurumlari.Beklemede));
 
         // Aynı kullanıcı adıyla iki hesap açılamasın.
         var kullaniciAdiIndexi = new CreateIndexModel<Kullanici>(

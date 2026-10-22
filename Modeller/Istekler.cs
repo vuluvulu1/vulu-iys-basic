@@ -44,18 +44,6 @@ public class ParcaKullanIstegi
     public int Adet { get; set; }
 }
 
-public class TeklifIstegi
-{
-    public decimal Tutar { get; set; }
-    public string Aciklama { get; set; } = "";
-}
-
-public class TeklifYanitIstegi
-{
-    public bool Onaylandi { get; set; }
-    public string Not { get; set; } = "";
-}
-
 // İşlem geçmişine elle eklenen not, örn. "Müşteri yarın gelip alacak."
 public class NotIstegi
 {

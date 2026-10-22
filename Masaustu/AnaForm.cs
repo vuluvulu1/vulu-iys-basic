@@ -8,12 +8,13 @@ namespace Masaustu
         {
             InitializeComponent();
             Tema.Uygula(this);
-            picLogo.Image = Tema.LogoResmi(48);
         }
 
         private async void Form_Load(object sender, EventArgs e)
         {
             Kullanici ben = Api.Ben!;
+            lblIsletmeAdi.Text = Api.IsletmeAdi;
+            Text = Api.IsletmeAdi;
             lblHosgeldin.Text = "Hoş geldin, " + ben.AdSoyad + " (" + ben.Rol + ")";
 
             // Personel ve rapor ekranlarını yalnızca yönetici görür.
