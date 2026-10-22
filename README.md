@@ -3,10 +3,12 @@
 Servis ve onarım işletmeleri için küçük bir yönetim programı: müşteriler, servis kayıtları, stok, personel ve rapor.
 
 ```text
-Masaüstü (WinForms)  --HTTP-->  Api (ASP.NET Core)  -->  MongoDB
+Masaüstü (WinForms)  --HTTPS-->  Api (Render, Docker)  -->  MongoDB Atlas
 ```
 
-Masaüstü programı veritabanına hiç bağlanmaz; her şeyi API'den ister.
+Masaüstü programı veritabanına hiç bağlanmaz; her şeyi API'den ister. Veritabanının şifresi yalnızca API'nin
+çalıştığı yerde (Render) durur, işletmelere verilen pakette yoktur. Her işletmenin kendi Render servisi ve kendi
+veritabanı vardır.
 
 ## Projeler
 
@@ -18,10 +20,11 @@ Masaüstü programı veritabanına hiç bağlanmaz; her şeyi API'den ister.
   olarak tutar ve tasarımcının yapamadığı birkaç işi yapar (pencere simgesi, koyu başlık çubuğu, menü üzerine
   gelme rengi, pasif butonların soluk görünmesi).
 
-## Çalıştırma
+## Bu bilgisayarda çalıştırma (geliştirme)
 
-1. Bilgisayarda MongoDB çalışıyor olmalı (`mongodb://localhost:27017`). Başka bir adres için
-   `Api/appsettings.json` içindeki `Mongo:BaglantiDizesi` değiştirilir.
+1. Varsayılan olarak bu bilgisayardaki MongoDB kullanılır (`mongodb://localhost:27017`). Atlas'a bağlanmak için
+   `Api/appsettings.Local.ornek.json` dosyasını aynı klasöre `appsettings.Local.json` adıyla kopyalayıp Atlas
+   bağlantı dizesini yazın. Bu dosya git'e girmez ve yayımlanan dosyalara konmaz.
 2. Önce API'yi başlatın:
 
    ```bash
@@ -34,26 +37,39 @@ Masaüstü programı veritabanına hiç bağlanmaz; her şeyi API'den ister.
    dotnet run --project Masaustu
    ```
 
+   Programın bağlandığı API adresi `Masaustu/ayarlar.json` içindedir (varsayılan `http://localhost:5050/`).
+
 Visual Studio'da: çözüme sağ tık → "Configure Startup Projects" → "Multiple startup projects" ile `Api` ve
 `Masaustu` birlikte başlatılabilir.
-
-Program her işletmeye kendi adıyla verilir. İşletmenin adı giriş ekranında, menüde ve pencere başlığında; adı,
-adresi, telefonu ve servis kabul koşulları PDF formlarda görünür. Hepsi `Api/appsettings.json` içindeki `Isletme`
-bölümünden değiştirilir. "vulu İYS" yalnızca giriş ekranının altında küçük olarak yazar.
 
 İlk açılışta veritabanında hiç kullanıcı yoksa `admin` / `admin1234` hesabı oluşturulur
 (`Api/appsettings.json` içindeki `IlkYonetici`). İlk girişten sonra şifreyi "Şifre değiştir" ile değiştirin.
 
+## Bulut kurulumu (her işletme için bir kez)
+
+**Veritabanı (MongoDB Atlas):** bir küme ve bir veritabanı kullanıcısı oluşturulur. "Network Access" listesine
+`0.0.0.0/0` eklenir (Render'ın ücretsiz planında sabit çıkış adresi yoktur; veritabanını koruyan şey kullanıcı
+şifresidir, uzun ve rastgele olmalıdır). Aynı küme birden çok işletme için kullanılabilir; her işletmeye ayrı
+veritabanı adı verilir.
+
+**API (Render):** "New → Blueprint" ile bu depo seçilir; `render.yaml` servisi tanımlar ve şunları ister:
+
+- `Mongo__BaglantiDizesi`: Atlas bağlantı dizesi
+- `Mongo__VeritabaniAdi`: bu işletmenin veritabanı, örn. `vulu_yildiz_teknik_servis`
+- `Isletme__Ad`: giriş ekranında, menüde ve formlarda görünen ad
+- `IlkYonetici__Sifre`: ilk yönetici hesabının şifresi (kullanıcı adı `admin`)
+
+Adres, telefon ve servis koşulları için Render panelinden `Isletme__Adres`, `Isletme__Telefon` ve
+`Isletme__ServisKosullari` eklenebilir. Ücretsiz planda servis 15 dakika istek almayınca uyur; sonraki ilk istek
+bir dakika kadar sürebilir.
+
 ## İşletmeye özel paket hazırlama
 
-`Paketleyici` projesini çalıştırın, işletmenin adını yazıp "Paketi hazırla"ya basın. Program API'yi ve masaüstü
-programını derleyip `Dagitim/<işletme adı>/` klasörüne koyar:
-
-- `Api/appsettings.json` içine işletmenin adı ve ona ayrılan veritabanının adı yazılır
-  (örn. "Yıldız Teknik Servis" için `vulu_yildiz_teknik_servis`). Adres ve telefon boş bırakılır; gerekirse bu
-  dosyadan doldurulur.
-- `Baslat.bat` önce API'yi, sonra masaüstü programını açar.
-- .NET pakete dahildir (her biri yaklaşık 120 MB); karşı bilgisayarda yalnızca MongoDB kurulu olmalıdır.
+`Paketleyici` projesini çalıştırın, işletmenin Render adresini (örn. `https://yildiz-servis.onrender.com`) yazıp
+"Paketi hazırla"ya basın. Paketleyici işletmenin adını o API'den öğrenir, masaüstü programını derler ve
+`Dagitim/<işletme adı>/` klasörüne koyar; programın yanındaki `ayarlar.json` dosyasına API adresini yazar.
+Klasör işletmeye olduğu gibi verilir ve `Masaustu.exe` ile açılır. .NET pakete dahildir (yaklaşık 120 MB), karşı
+bilgisayarda bir şey kurmak gerekmez. "vulu İYS" yalnızca giriş ekranının altında küçük olarak yazar.
 
 ## Kurallar
 

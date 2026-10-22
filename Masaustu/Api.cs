@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json.Nodes;
 using Modeller;
 
 namespace Masaustu
@@ -10,10 +11,25 @@ namespace Masaustu
     // formlar bunu try/catch ile yakalayıp MessageBox ile gösterir.
     public static class Api
     {
-        // API başka bir bilgisayardaysa bu adres değiştirilir.
-        private const string ApiAdresi = "http://localhost:5050/";
+        // API'nin adresi programın yanındaki ayarlar.json dosyasından okunur (Render'daki API ya da bu bilgisayardaki).
+        // Paketleyici her işletmenin paketine o işletmenin API adresini yazar.
+        private static readonly string ApiAdresi = AdresiOku();
 
         private static readonly HttpClient istemci = new HttpClient { BaseAddress = new Uri(ApiAdresi) };
+
+        private static string AdresiOku()
+        {
+            string dosya = Path.Combine(AppContext.BaseDirectory, "ayarlar.json");
+            JsonNode? ayarlar = JsonNode.Parse(File.ReadAllText(dosya));
+            string adres = ayarlar?["ApiAdresi"]?.GetValue<string>() ?? "";
+
+            // "https://ornek.onrender.com" ile "https://ornek.onrender.com/" aynı işi görsün.
+            if (!adres.EndsWith("/"))
+            {
+                adres += "/";
+            }
+            return adres;
+        }
 
         // Giriş yapan kullanıcı. Giriş yapılmadan önce null'dır.
         public static Kullanici? Ben { get; private set; }

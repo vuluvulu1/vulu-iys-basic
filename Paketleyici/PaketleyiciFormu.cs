@@ -1,13 +1,11 @@
 using System.Diagnostics;
-using System.Globalization;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Paketleyici
 {
-    // İşletme adını alır, API'yi ve masaüstü programını o işletmeye özel olarak Dagitim klasörüne hazırlar.
-    // Hazırlanan klasör başka bir bilgisayara kopyalanabilir; .NET kurulu olması gerekmez (yalnızca MongoDB).
+    // Bir işletmenin Render'daki API adresini alır, işletmenin adını o API'den öğrenir ve masaüstü programını
+    // bu adrese bağlı olarak Dagitim\<işletme adı>\ klasörüne hazırlar. Klasör işletmeye olduğu gibi verilir;
+    // karşı bilgisayarda .NET kurulu olması gerekmez.
     public partial class PaketleyiciFormu : Form
     {
         public PaketleyiciFormu()
@@ -17,10 +15,10 @@ namespace Paketleyici
 
         private async void btnHazirla_Click(object sender, EventArgs e)
         {
-            string isletmeAdi = txtIsletmeAdi.Text.Trim();
-            if (isletmeAdi == "")
+            string apiAdresi = txtApiAdresi.Text.Trim().TrimEnd('/');
+            if (!apiAdresi.StartsWith("http://") && !apiAdresi.StartsWith("https://"))
             {
-                MessageBox.Show("İşletme adını yazın.");
+                MessageBox.Show("API adresini https:// ile başlayarak yazın.");
                 return;
             }
 
@@ -31,29 +29,30 @@ namespace Paketleyici
                 return;
             }
 
-            string hedef = Path.Combine(cozumKlasoru, "Dagitim", DosyaAdi(isletmeAdi));
-            if (Directory.Exists(hedef))
-            {
-                var cevap = MessageBox.Show(isletmeAdi + " için bir paket zaten var. Silinip yeniden hazırlansın mı?",
-                    "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (cevap != DialogResult.Yes)
-                {
-                    return;
-                }
-                Directory.Delete(hedef, true);
-            }
-
             btnHazirla.Enabled = false;
             try
             {
-                lblDurum.Text = "API hazırlanıyor... (ilk seferde birkaç dakika sürebilir)";
-                await Yayinla(Path.Combine(cozumKlasoru, "Api"), Path.Combine(hedef, "Api"));
+                // Paket yanlış işletmenin API'sine bağlanmasın diye adı API'nin kendisinden alıyoruz.
+                lblDurum.Text = "API'ye bağlanılıyor... (Render uyuyorsa bir dakika kadar sürebilir)";
+                string isletmeAdi = await IsletmeAdiniGetir(apiAdresi);
 
-                lblDurum.Text = "Masaüstü programı hazırlanıyor...";
-                await Yayinla(Path.Combine(cozumKlasoru, "Masaustu"), Path.Combine(hedef, "Masaustu"));
+                string hedef = Path.Combine(cozumKlasoru, "Dagitim", DosyaAdi(isletmeAdi));
+                if (Directory.Exists(hedef))
+                {
+                    var cevap = MessageBox.Show(isletmeAdi + " için bir paket zaten var. Silinip yeniden hazırlansın mı?",
+                        "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (cevap != DialogResult.Yes)
+                    {
+                        lblDurum.Text = "";
+                        btnHazirla.Enabled = true;
+                        return;
+                    }
+                    Directory.Delete(hedef, true);
+                }
 
-                AyarlariYaz(Path.Combine(hedef, "Api", "appsettings.json"), isletmeAdi);
-                BaslatmaDosyasiYaz(hedef);
+                lblDurum.Text = isletmeAdi + " için program hazırlanıyor... (ilk seferde birkaç dakika sürebilir)";
+                await Yayinla(Path.Combine(cozumKlasoru, "Masaustu"), hedef);
+                AyarDosyasiYaz(hedef, apiAdresi);
 
                 lblDurum.Text = "Hazır: " + hedef;
                 Process.Start("explorer.exe", hedef);
@@ -66,7 +65,28 @@ namespace Paketleyici
             btnHazirla.Enabled = true;
         }
 
-        // "dotnet publish" ile projeyi derleyip çalışmaya hazır dosyaları çıkış klasörüne koyar.
+        private static async Task<string> IsletmeAdiniGetir(string apiAdresi)
+        {
+            using var istemci = new HttpClient { Timeout = TimeSpan.FromSeconds(120) };
+            string cevap;
+            try
+            {
+                cevap = await istemci.GetStringAsync(apiAdresi + "/api/isletme");
+            }
+            catch (Exception)
+            {
+                throw new Exception("API'ye ulaşılamadı. Adresi ve Render'daki servisin çalıştığını kontrol edin.\n(" + apiAdresi + ")");
+            }
+
+            string ad = JsonNode.Parse(cevap)?["ad"]?.GetValue<string>() ?? "";
+            if (ad == "")
+            {
+                throw new Exception("API'de işletme adı ayarlanmamış. Render'da Isletme__Ad değerini girin.");
+            }
+            return ad;
+        }
+
+        // "dotnet publish" ile masaüstü programını derleyip çalışmaya hazır dosyaları çıkış klasörüne koyar.
         // --self-contained: .NET'in kendisi de pakete girer, böylece karşı bilgisayarda .NET kurulu olmasa da çalışır.
         private static async Task Yayinla(string projeKlasoru, string cikisKlasoru)
         {
@@ -95,36 +115,11 @@ namespace Paketleyici
             }
         }
 
-        // Paketteki API ayarlarına işletmenin adını ve ona ayrılan veritabanının adını yazar.
-        // Adres ve telefon boş bırakılır; gerekirse paketteki Api\appsettings.json dosyasından doldurulur.
-        private static void AyarlariYaz(string ayarDosyasi, string isletmeAdi)
+        // Paketteki programın bağlanacağı API adresini yazar (bkz. Masaustu\Api.cs).
+        private static void AyarDosyasiYaz(string hedef, string apiAdresi)
         {
-            JsonNode ayarlar = JsonNode.Parse(File.ReadAllText(ayarDosyasi))!;
-            ayarlar["Isletme"]!["Ad"] = isletmeAdi;
-            ayarlar["Isletme"]!["Adres"] = "";
-            ayarlar["Isletme"]!["Telefon"] = "";
-            ayarlar["Mongo"]!["VeritabaniAdi"] = "vulu_" + VeritabaniAdi(isletmeAdi);
-
-            // Türkçe harfler dosyada ç gibi değil, olduğu gibi yazılsın.
-            var secenekler = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-            File.WriteAllText(ayarDosyasi, ayarlar.ToJsonString(secenekler));
-        }
-
-        // Çift tıklanınca önce API'yi (küçültülmüş pencerede), birkaç saniye sonra masaüstü programını açar.
-        private static void BaslatmaDosyasiYaz(string hedef)
-        {
-            string[] satirlar =
-            [
-                "@echo off",
-                "start \"API\" /min /D \"%~dp0Api\" \"%~dp0Api\\Api.exe\"",
-                "timeout /t 3 /nobreak >nul",
-                "start \"\" \"%~dp0Masaustu\\Masaustu.exe\""
-            ];
-            File.WriteAllLines(Path.Combine(hedef, "Baslat.bat"), satirlar);
+            var ayarlar = new JsonObject { ["ApiAdresi"] = apiAdresi + "/" };
+            File.WriteAllText(Path.Combine(hedef, "ayarlar.json"), ayarlar.ToJsonString(new() { WriteIndented = true }));
         }
 
         // Paketleyicinin bulunduğu klasörden yukarı doğru çıkıp vulu-iys-basic.slnx dosyasını arar.
@@ -151,30 +146,6 @@ namespace Paketleyici
                 sonuc = sonuc.Replace(karakter, ' ');
             }
             return sonuc.Trim();
-        }
-
-        // "Yıldız Teknik Servis" -> "yildiz_teknik_servis"
-        private static string VeritabaniAdi(string isletmeAdi)
-        {
-            string sonuc = "";
-            foreach (char harf in isletmeAdi.ToLower(new CultureInfo("tr-TR")))
-            {
-                if (harf == 'ç') sonuc += 'c';
-                else if (harf == 'ğ') sonuc += 'g';
-                else if (harf == 'ı') sonuc += 'i';
-                else if (harf == 'ö') sonuc += 'o';
-                else if (harf == 'ş') sonuc += 's';
-                else if (harf == 'ü') sonuc += 'u';
-                else if (char.IsAsciiLetterOrDigit(harf)) sonuc += harf;
-                else if (!sonuc.EndsWith('_')) sonuc += '_';
-            }
-
-            // MongoDB veritabanı adları kısa olmalı.
-            if (sonuc.Length > 40)
-            {
-                sonuc = sonuc.Substring(0, 40);
-            }
-            return sonuc.Trim('_');
         }
     }
 }

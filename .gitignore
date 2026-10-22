@@ -3,3 +3,6 @@ obj/
 .vs/
 *.user
 Dagitim/
+
+# Makineye özel gizli ayarlar (örneği: Api/appsettings.Local.ornek.json)
+appsettings.Local.json

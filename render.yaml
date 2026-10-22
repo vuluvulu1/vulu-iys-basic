@@ -1,0 +1,17 @@
+# Render Blueprint: API'yi Dockerfile'dan kurar. Her işletme için ayrı bir servis açılır.
+# "sync: false" olan değerler kurulumda Render panelinden elle girilir.
+services:
+  - type: web
+    name: vulu-basic-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/isletme
+    envVars:
+      - key: Mongo__BaglantiDizesi
+        sync: false
+      - key: Mongo__VeritabaniAdi
+        sync: false
+      - key: Isletme__Ad
+        sync: false
+      - key: IlkYonetici__Sifre
+        sync: false

@@ -30,8 +30,8 @@ namespace Paketleyici
         {
             lblBaslik = new Label();
             lblAciklama = new Label();
-            lblIsletmeAdi = new Label();
-            txtIsletmeAdi = new TextBox();
+            lblApiAdresi = new Label();
+            txtApiAdresi = new TextBox();
             btnHazirla = new Button();
             lblDurum = new Label();
             SuspendLayout();
@@ -52,26 +52,26 @@ namespace Paketleyici
             lblAciklama.Location = new Point(22, 46);
             lblAciklama.Name = "lblAciklama";
             lblAciklama.TabIndex = 1;
-            lblAciklama.Text = "Program bu adla hazırlanır ve Dagitim klasörüne konur.";
+            lblAciklama.Text = "Program işletmenin API'sine bağlanır ve Dagitim klasörüne konur.";
             //
-            // lblIsletmeAdi
+            // lblApiAdresi
             //
-            lblIsletmeAdi.AutoSize = true;
-            lblIsletmeAdi.Location = new Point(20, 86);
-            lblIsletmeAdi.Name = "lblIsletmeAdi";
-            lblIsletmeAdi.TabIndex = 2;
-            lblIsletmeAdi.Text = "İşletme adı";
+            lblApiAdresi.AutoSize = true;
+            lblApiAdresi.Location = new Point(20, 86);
+            lblApiAdresi.Name = "lblApiAdresi";
+            lblApiAdresi.TabIndex = 2;
+            lblApiAdresi.Text = "API adresi";
             //
-            // txtIsletmeAdi
+            // txtApiAdresi
             //
-            txtIsletmeAdi.BackColor = Color.FromArgb(43, 26, 16);
-            txtIsletmeAdi.BorderStyle = BorderStyle.FixedSingle;
-            txtIsletmeAdi.ForeColor = Color.FromArgb(243, 230, 214);
-            txtIsletmeAdi.Location = new Point(110, 83);
-            txtIsletmeAdi.Name = "txtIsletmeAdi";
-            txtIsletmeAdi.PlaceholderText = "Örn. Yıldız Teknik Servis";
-            txtIsletmeAdi.Size = new Size(290, 23);
-            txtIsletmeAdi.TabIndex = 3;
+            txtApiAdresi.BackColor = Color.FromArgb(43, 26, 16);
+            txtApiAdresi.BorderStyle = BorderStyle.FixedSingle;
+            txtApiAdresi.ForeColor = Color.FromArgb(243, 230, 214);
+            txtApiAdresi.Location = new Point(110, 83);
+            txtApiAdresi.Name = "txtApiAdresi";
+            txtApiAdresi.PlaceholderText = "https://isletme-adi.onrender.com";
+            txtApiAdresi.Size = new Size(290, 23);
+            txtApiAdresi.TabIndex = 3;
             //
             // btnHazirla
             //
@@ -107,8 +107,8 @@ namespace Paketleyici
             ClientSize = new Size(420, 220);
             Controls.Add(lblDurum);
             Controls.Add(btnHazirla);
-            Controls.Add(txtIsletmeAdi);
-            Controls.Add(lblIsletmeAdi);
+            Controls.Add(txtApiAdresi);
+            Controls.Add(lblApiAdresi);
             Controls.Add(lblAciklama);
             Controls.Add(lblBaslik);
             ForeColor = Color.FromArgb(243, 230, 214);
@@ -125,8 +125,8 @@ namespace Paketleyici
 
         private Label lblBaslik;
         private Label lblAciklama;
-        private Label lblIsletmeAdi;
-        private TextBox txtIsletmeAdi;
+        private Label lblApiAdresi;
+        private TextBox txtApiAdresi;
         private Button btnHazirla;
         private Label lblDurum;
     }

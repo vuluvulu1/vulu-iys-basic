@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+.git/
+.vs/
+Dagitim/
+Masaustu/
+Paketleyici/
+
+# Gizli ayarlar imaja girmez; Render'da ortam değişkeniyle verilir.
+**/appsettings.Local.json

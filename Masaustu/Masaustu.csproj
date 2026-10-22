@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <None Update="logo.ico" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="ayarlar.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

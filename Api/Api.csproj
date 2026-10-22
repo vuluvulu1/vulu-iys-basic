@@ -12,6 +12,11 @@
     <PackageReference Include="QuestPDF" Version="2026.9.1" />
   </ItemGroup>
 
+  <!-- Gizli ayar dosyası ve örneği yayımlanan dosyalara girmez. -->
+  <ItemGroup>
+    <Content Update="appsettings.Local.json;appsettings.Local.ornek.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Modeller\Modeller.csproj" />
   </ItemGroup>
