@@ -15,12 +15,10 @@ namespace Masaustu
         public static readonly Color Arka = ColorTranslator.FromHtml("#1a110a");
         public static readonly Color Yuzey = ColorTranslator.FromHtml("#2b1a10");
         public static readonly Color Kutu = ColorTranslator.FromHtml("#3a2416");
-        public static readonly Color Cizgi = ColorTranslator.FromHtml("#4a2e1c");
         public static readonly Color Yazi = ColorTranslator.FromHtml("#f3e6d6");
         public static readonly Color SolukYazi = ColorTranslator.FromHtml("#b89a7c");
         public static readonly Color PasifYazi = ColorTranslator.FromHtml("#6e5442");
         public static readonly Color Vurgu = ColorTranslator.FromHtml("#b5804f");
-        public static readonly Color VurguAcik = ColorTranslator.FromHtml("#e9c699");
         public static readonly Color Kirmizi = ColorTranslator.FromHtml("#e5604d");
         public static readonly Color Yesil = ColorTranslator.FromHtml("#8bc48a");
         public static readonly Color Mavi = ColorTranslator.FromHtml("#8fb3d9");

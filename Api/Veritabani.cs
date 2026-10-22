@@ -19,7 +19,7 @@ public static class Veritabani
         string baglantiDizesi = ayarlar["Mongo:BaglantiDizesi"] ?? "mongodb://localhost:27017";
         string veritabaniAdi = ayarlar["Mongo:VeritabaniAdi"] ?? "vulu_basic";
 
-        // Modelden bir alan kaldırılsa bile veritabanındaki eski kayıtlar okunabilsin:
+        // Veritabanındaki eski kayıtlarda modelden kaldırılmış alanlar duruyor olabilir;
         // belgede sınıfta olmayan bir alan varsa hata verme, o alanı görmezden gel.
         var kurallar = new ConventionPack { new IgnoreExtraElementsConvention(true) };
         ConventionRegistry.Register("FazlaAlanlariYokSay", kurallar, _ => true);
@@ -33,11 +33,6 @@ public static class Veritabani
         Parcalar = veritabani.GetCollection<Parca>("parcalar");
         Sayaclar = veritabani.GetCollection<Sayac>("sayaclar");
         IslemGecmisi = veritabani.GetCollection<IslemKaydi>("islemGecmisi");
-
-        // Fiyat teklifi özelliği kaldırıldı; "Onay bekliyor" durumunda kalmış kayıtlar "Beklemede"ye alınır.
-        await ServisKayitlari.UpdateManyAsync(
-            s => s.Durum == "Onay bekliyor",
-            Builders<ServisKaydi>.Update.Set(s => s.Durum, ServisDurumlari.Beklemede));
 
         // Aynı kullanıcı adıyla iki hesap açılamasın.
         var kullaniciAdiIndexi = new CreateIndexModel<Kullanici>(

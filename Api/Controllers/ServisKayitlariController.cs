@@ -67,7 +67,6 @@ public class ServisKayitlariController : ControllerBase
         kayit.AcilisTarihi = DateTime.UtcNow;
         // Parçalar kayıt açıldıktan sonra tek tek eklenir, çünkü her biri stoktan düşülmeli.
         kayit.Parcalar = [];
-        TarihleriAyarla(kayit);
 
         await Veritabani.ServisKayitlari.InsertOneAsync(kayit);
         await Veritabani.GecmiseYaz(kayit.Id, ben, "Kayıt açıldı.");
@@ -98,10 +97,6 @@ public class ServisKayitlariController : ControllerBase
             kayit.TeknisyenAdi = eski.TeknisyenAdi;
         }
 
-        kayit.TamamlanmaTarihi = eski.TamamlanmaTarihi;
-        kayit.TeslimTarihi = eski.TeslimTarihi;
-        TarihleriAyarla(kayit);
-
         var guncelleme = Builders<ServisKaydi>.Update
             .Set(s => s.TeknisyenId, kayit.TeknisyenId)
             .Set(s => s.TeknisyenAdi, kayit.TeknisyenAdi)
@@ -112,9 +107,7 @@ public class ServisKayitlariController : ControllerBase
             .Set(s => s.YapilanIslem, kayit.YapilanIslem)
             .Set(s => s.Durum, kayit.Durum)
             .Set(s => s.IscilikUcreti, kayit.IscilikUcreti)
-            .Set(s => s.OdendiMi, kayit.OdendiMi)
-            .Set(s => s.TamamlanmaTarihi, kayit.TamamlanmaTarihi)
-            .Set(s => s.TeslimTarihi, kayit.TeslimTarihi);
+            .Set(s => s.OdendiMi, kayit.OdendiMi);
         await Veritabani.ServisKayitlari.UpdateOneAsync(s => s.Id == id, guncelleme);
 
         string degisiklikler = DegisiklikleriYaz(eski, kayit);
@@ -317,25 +310,5 @@ public class ServisKayitlariController : ControllerBase
 
         kayit.TeknisyenAdi = teknisyen.AdSoyad;
         return null;
-    }
-
-    // Kayıt "Tamamlandı" ya da "Teslim edildi" olduğu anı not eder; geri alınırsa tarihi temizler.
-    private static void TarihleriAyarla(ServisKaydi kayit)
-    {
-        if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.DevamEdiyor)
-        {
-            kayit.TamamlanmaTarihi = null;
-            kayit.TeslimTarihi = null;
-        }
-        if (kayit.Durum == ServisDurumlari.Tamamlandi)
-        {
-            kayit.TamamlanmaTarihi ??= DateTime.UtcNow;
-            kayit.TeslimTarihi = null;
-        }
-        if (kayit.Durum == ServisDurumlari.TeslimEdildi)
-        {
-            kayit.TamamlanmaTarihi ??= DateTime.UtcNow;
-            kayit.TeslimTarihi ??= DateTime.UtcNow;
-        }
     }
 }

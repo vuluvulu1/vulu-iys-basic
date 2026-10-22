@@ -40,7 +40,6 @@ public class MusterilerController : ControllerBase
 
         musteri.Id = Veritabani.YeniId();
         musteri.AdSoyad = musteri.AdSoyad.Trim();
-        musteri.KayitTarihi = DateTime.UtcNow;
         await Veritabani.Musteriler.InsertOneAsync(musteri);
         return Ok(musteri);
     }

@@ -28,8 +28,6 @@ public class ServisKaydi
     public List<KullanilanParca> Parcalar { get; set; } = [];
 
     public DateTime AcilisTarihi { get; set; } = DateTime.UtcNow;
-    public DateTime? TamamlanmaTarihi { get; set; }
-    public DateTime? TeslimTarihi { get; set; }
 
     public decimal ParcaToplami()
     {
