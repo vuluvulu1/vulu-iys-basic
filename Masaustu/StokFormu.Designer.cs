@@ -76,6 +76,7 @@
             btnEkle.Name = "btnEkle";
             btnEkle.Size = new Size(110, 32);
             btnEkle.TabIndex = 3;
+            btnEkle.Tag = "ana";
             btnEkle.Text = "Yeni parça";
             btnEkle.UseVisualStyleBackColor = true;
             btnEkle.Click += btnEkle_Click;

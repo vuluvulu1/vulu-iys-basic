@@ -27,6 +27,9 @@ public class ServisKaydi
 
     public List<KullanilanParca> Parcalar { get; set; } = [];
 
+    // Tamire başlamadan önce müşteriye verilen fiyat teklifi. Teklif verilmediyse null'dır.
+    public Teklif? Teklif { get; set; }
+
     public DateTime AcilisTarihi { get; set; } = DateTime.UtcNow;
     public DateTime? TamamlanmaTarihi { get; set; }
     public DateTime? TeslimTarihi { get; set; }
@@ -63,13 +66,45 @@ public class KullanilanParca
     }
 }
 
+// Müşteriye bildirilen tahmini tutar ve müşterinin cevabı.
+public class Teklif
+{
+    public decimal Tutar { get; set; }
+    public string Aciklama { get; set; } = "";
+    public string Durum { get; set; } = TeklifDurumlari.Bekliyor;
+    public DateTime Tarih { get; set; } = DateTime.UtcNow;
+    public DateTime? YanitTarihi { get; set; }
+
+    // Onayın ya da reddin nasıl alındığı, örn. "Telefonla aradı, onayladı."
+    public string YanitNotu { get; set; } = "";
+}
+
+public static class TeklifDurumlari
+{
+    public const string Bekliyor = "Bekliyor";
+    public const string Onaylandi = "Onaylandı";
+    public const string Reddedildi = "Reddedildi";
+}
+
+// Servis kaydının işlem geçmişindeki bir satır: kim, ne zaman, ne yaptı. Yalnızca eklenir, değiştirilmez.
+public class IslemKaydi
+{
+    public string Id { get; set; } = "";
+    public string ServisKaydiId { get; set; } = "";
+    public DateTime Tarih { get; set; } = DateTime.UtcNow;
+    public string KullaniciAdi { get; set; } = "";
+    public string Aciklama { get; set; } = "";
+}
+
 public static class ServisDurumlari
 {
     public const string Beklemede = "Beklemede";
+    // Müşteriye fiyat teklifi verildi, cevabı bekleniyor.
+    public const string OnayBekliyor = "Onay bekliyor";
     public const string DevamEdiyor = "Devam ediyor";
     public const string Tamamlandi = "Tamamlandı";
     public const string TeslimEdildi = "Teslim edildi";
     public const string IptalEdildi = "İptal edildi";
 
-    public static readonly string[] Hepsi = [Beklemede, DevamEdiyor, Tamamlandi, TeslimEdildi, IptalEdildi];
+    public static readonly string[] Hepsi = [Beklemede, OnayBekliyor, DevamEdiyor, Tamamlandi, TeslimEdildi, IptalEdildi];
 }

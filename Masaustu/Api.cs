@@ -48,6 +48,13 @@ namespace Masaustu
             return (await cevap.Content.ReadFromJsonAsync<T>())!;
         }
 
+        // PDF gibi dosyaları olduğu gibi indirir.
+        public static async Task<byte[]> DosyaGetir(string adres)
+        {
+            HttpResponseMessage cevap = await Istek(() => istemci.GetAsync(adres));
+            return await cevap.Content.ReadAsByteArrayAsync();
+        }
+
         public static async Task<T> Gonder<T>(string adres, object veri)
         {
             HttpResponseMessage cevap = await Istek(() => istemci.PostAsJsonAsync(adres, veri));

@@ -7,6 +7,7 @@ namespace Masaustu
         public RaporFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
         }
 
         private async void Form_Load(object sender, EventArgs e)

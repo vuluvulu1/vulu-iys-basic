@@ -7,6 +7,7 @@ namespace Masaustu
         public ServisKayitlariFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
         }
 
         private async void Form_Load(object sender, EventArgs e)
@@ -25,10 +26,9 @@ namespace Masaustu
             dgvKayitlar.Columns.Add("Tutar", "Tutar");
             dgvKayitlar.Columns.Add("Odeme", "Ödeme");
 
-            // Sütunlar pencereyi doldurur; FillWeight hangisinin ne kadar pay alacağını söyler (varsayılan 100).
-            dgvKayitlar.Columns["Musteri"].FillWeight = 130;
-            dgvKayitlar.Columns["Cihaz"].FillWeight = 170;
-            dgvKayitlar.Columns["Odeme"].FillWeight = 60;
+            Yardimci.SutunPayi(dgvKayitlar, "Musteri", 130);
+            Yardimci.SutunPayi(dgvKayitlar, "Cihaz", 170);
+            Yardimci.SutunPayi(dgvKayitlar, "Odeme", 60);
             Yardimci.SagaYasla(dgvKayitlar, "Tutar");
 
             await Listele();
@@ -55,6 +55,7 @@ namespace Masaustu
                     int satir = dgvKayitlar.Rows.Add(kayit.No, kayit.MusteriAdi, kayit.Cihaz, kayit.Durum,
                         kayit.TeknisyenAdi, Yardimci.Tarih(kayit.AcilisTarihi), Yardimci.Para(kayit.ToplamTutar()), odeme);
                     dgvKayitlar.Rows[satir].Tag = kayit;
+                    dgvKayitlar.Rows[satir].Cells["Durum"].Style.ForeColor = Tema.DurumRengi(kayit.Durum);
                 }
             }
             catch (Exception hata)

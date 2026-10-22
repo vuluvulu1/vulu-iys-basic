@@ -11,6 +11,7 @@ public static class Veritabani
     public static IMongoCollection<ServisKaydi> ServisKayitlari = null!;
     public static IMongoCollection<Parca> Parcalar = null!;
     public static IMongoCollection<Sayac> Sayaclar = null!;
+    public static IMongoCollection<IslemKaydi> IslemGecmisi = null!;
 
     public static async Task Baslat(IConfiguration ayarlar)
     {
@@ -25,6 +26,7 @@ public static class Veritabani
         ServisKayitlari = veritabani.GetCollection<ServisKaydi>("servisKayitlari");
         Parcalar = veritabani.GetCollection<Parca>("parcalar");
         Sayaclar = veritabani.GetCollection<Sayac>("sayaclar");
+        IslemGecmisi = veritabani.GetCollection<IslemKaydi>("islemGecmisi");
 
         // Aynı kullanıcı adıyla iki hesap açılamasın.
         var kullaniciAdiIndexi = new CreateIndexModel<Kullanici>(
@@ -45,6 +47,20 @@ public static class Veritabani
             };
             await Kullanicilar.InsertOneAsync(yonetici);
         }
+    }
+
+    // Servis kaydının geçmişine bir satır ekler: "Ahmet, 12.10 14:30, Durum: Beklemede → Devam ediyor"
+    public static async Task GecmiseYaz(string servisKaydiId, Kullanici kim, string aciklama)
+    {
+        var satir = new IslemKaydi
+        {
+            Id = YeniId(),
+            ServisKaydiId = servisKaydiId,
+            Tarih = DateTime.UtcNow,
+            KullaniciAdi = kim.AdSoyad,
+            Aciklama = aciklama
+        };
+        await IslemGecmisi.InsertOneAsync(satir);
     }
 
     public static string YeniId()

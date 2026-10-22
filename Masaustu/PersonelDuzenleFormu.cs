@@ -10,6 +10,7 @@ namespace Masaustu
         public PersonelDuzenleFormu(Kullanici? kisi)
         {
             InitializeComponent();
+            Tema.Uygula(this);
             this.kisi = kisi;
         }
 

@@ -7,6 +7,8 @@ namespace Masaustu
         public AnaForm()
         {
             InitializeComponent();
+            Tema.Uygula(this);
+            picLogo.Image = Tema.LogoResmi(48);
         }
 
         private async void Form_Load(object sender, EventArgs e)
@@ -15,15 +17,15 @@ namespace Masaustu
             lblHosgeldin.Text = "Hoş geldin, " + ben.AdSoyad + " (" + ben.Rol + ")";
 
             // Personel ve rapor ekranlarını yalnızca yönetici görür.
-            btnPersonel.Visible = ben.YoneticiMi();
-            btnRapor.Visible = ben.YoneticiMi();
+            mnuPersonel.Visible = ben.YoneticiMi();
+            mnuRapor.Visible = ben.YoneticiMi();
 
             // Gizlenen iki butonun yeri boş kalmasın; alttaki butonları o kadar yukarı kaydır.
             if (!ben.YoneticiMi())
             {
-                int bosluk = btnRapor.Bottom - btnStok.Bottom;
-                btnSifre.Top -= bosluk;
-                btnCikis.Top -= bosluk;
+                int bosluk = mnuRapor.Bottom - mnuStok.Bottom;
+                mnuSifre.Top -= bosluk;
+                mnuCikis.Top -= bosluk;
             }
 
             await OzetiYukle();
@@ -34,11 +36,15 @@ namespace Masaustu
             try
             {
                 Ozet ozet = await Api.Getir<Ozet>("api/ozet");
-                lblAcikIs.Text = "Açık iş: " + ozet.AcikIsSayisi;
-                lblTeslimBekleyen.Text = "Teslim bekleyen: " + ozet.TeslimBekleyenSayisi;
-                lblBugunAcilan.Text = "Bugün açılan: " + ozet.BugunAcilanSayisi;
-                lblKritikStok.Text = "Kritik stoktaki parça: " + ozet.KritikStokSayisi;
-                lblOdenmemis.Text = "Ödenmemiş tutar: " + Yardimci.Para(ozet.OdenmemisTutar);
+                lblAcikIs.Text = ozet.AcikIsSayisi.ToString();
+                lblTeslimBekleyen.Text = ozet.TeslimBekleyenSayisi.ToString();
+                lblBugunAcilan.Text = ozet.BugunAcilanSayisi.ToString();
+                lblKritikStok.Text = ozet.KritikStokSayisi.ToString();
+                lblOdenmemis.Text = Yardimci.Para(ozet.OdenmemisTutar);
+
+                // Dikkat isteyen sayılar kırmızı görünsün.
+                lblKritikStok.ForeColor = ozet.KritikStokSayisi > 0 ? Tema.Kirmizi : Tema.Yazi;
+                lblOdenmemis.ForeColor = ozet.OdenmemisTutar > 0 ? Tema.Kirmizi : Tema.Yazi;
             }
             catch (Exception hata)
             {
@@ -47,40 +53,40 @@ namespace Masaustu
         }
 
         // Her ekran ayrı bir pencerede açılır; kapanınca özet yenilenir.
-        private async void btnMusteriler_Click(object sender, EventArgs e)
+        private async void mnuMusteriler_Click(object sender, EventArgs e)
         {
             new MusterilerFormu().ShowDialog();
             await OzetiYukle();
         }
 
-        private async void btnServis_Click(object sender, EventArgs e)
+        private async void mnuServis_Click(object sender, EventArgs e)
         {
             new ServisKayitlariFormu().ShowDialog();
             await OzetiYukle();
         }
 
-        private async void btnStok_Click(object sender, EventArgs e)
+        private async void mnuStok_Click(object sender, EventArgs e)
         {
             new StokFormu().ShowDialog();
             await OzetiYukle();
         }
 
-        private void btnPersonel_Click(object sender, EventArgs e)
+        private void mnuPersonel_Click(object sender, EventArgs e)
         {
             new PersonelFormu().ShowDialog();
         }
 
-        private void btnRapor_Click(object sender, EventArgs e)
+        private void mnuRapor_Click(object sender, EventArgs e)
         {
             new RaporFormu().ShowDialog();
         }
 
-        private void btnSifre_Click(object sender, EventArgs e)
+        private void mnuSifre_Click(object sender, EventArgs e)
         {
             new SifreDegistirFormu().ShowDialog();
         }
 
-        private async void btnCikis_Click(object sender, EventArgs e)
+        private async void mnuCikis_Click(object sender, EventArgs e)
         {
             await Api.CikisYap();
             // Programı baştan başlatır, yani giriş ekranına döner.

@@ -70,6 +70,7 @@ public class ServisKayitlariController : ControllerBase
         TarihleriAyarla(kayit);
 
         await Veritabani.ServisKayitlari.InsertOneAsync(kayit);
+        await Veritabani.GecmiseYaz(kayit.Id, ben, "Kayıt açıldı.");
         return Ok(kayit);
     }
 
@@ -115,6 +116,12 @@ public class ServisKayitlariController : ControllerBase
             .Set(s => s.TamamlanmaTarihi, kayit.TamamlanmaTarihi)
             .Set(s => s.TeslimTarihi, kayit.TeslimTarihi);
         await Veritabani.ServisKayitlari.UpdateOneAsync(s => s.Id == id, guncelleme);
+
+        string degisiklikler = DegisiklikleriYaz(eski, kayit);
+        if (degisiklikler != "")
+        {
+            await Veritabani.GecmiseYaz(id, ben, degisiklikler);
+        }
         return Ok();
     }
 
@@ -132,6 +139,7 @@ public class ServisKayitlariController : ControllerBase
         }
 
         await Veritabani.ServisKayitlari.DeleteOneAsync(s => s.Id == id);
+        await Veritabani.IslemGecmisi.DeleteManyAsync(g => g.ServisKaydiId == id);
         return Ok();
     }
 
@@ -172,6 +180,7 @@ public class ServisKayitlariController : ControllerBase
         await Veritabani.ServisKayitlari.UpdateOneAsync(
             s => s.Id == id,
             Builders<ServisKaydi>.Update.Push(s => s.Parcalar, satir));
+        await Veritabani.GecmiseYaz(id, ben, "Parça eklendi: " + satir.Ad + " (" + satir.Adet + " adet)");
         return Ok(satir);
     }
 
@@ -197,8 +206,161 @@ public class ServisKayitlariController : ControllerBase
             await Veritabani.Parcalar.UpdateOneAsync(
                 p => p.Id == satir.ParcaId,
                 Builders<Parca>.Update.Inc(p => p.StokAdedi, satir.Adet));
+            await Veritabani.GecmiseYaz(id, ben, "Parça çıkarıldı: " + satir.Ad + " (" + satir.Adet + " adet)");
         }
         return Ok();
+    }
+
+    // Teklif verilince kayıt "Onay bekliyor" olur; müşterinin cevabı ayrıca kaydedilir.
+    [HttpPost("{id}/teklif")]
+    public async Task<IActionResult> TeklifVer(string id, TeklifIstegi istek)
+    {
+        var ben = await Oturumlar.KullaniciyiBul(Request);
+        if (ben == null) return Unauthorized();
+        if (istek.Tutar <= 0) return BadRequest("Teklif tutarı sıfırdan büyük olmalı.");
+
+        var kayit = await Veritabani.ServisKayitlari.Find(s => s.Id == id).FirstOrDefaultAsync();
+        if (kayit == null) return NotFound("Servis kaydı bulunamadı.");
+        if (kayit.Durum == ServisDurumlari.TeslimEdildi || kayit.Durum == ServisDurumlari.IptalEdildi)
+        {
+            return BadRequest("Teslim edilmiş ya da iptal edilmiş kayda teklif verilemez.");
+        }
+
+        var teklif = new Teklif
+        {
+            Tutar = istek.Tutar,
+            Aciklama = istek.Aciklama,
+            Durum = TeklifDurumlari.Bekliyor,
+            Tarih = DateTime.UtcNow
+        };
+        await Veritabani.ServisKayitlari.UpdateOneAsync(
+            s => s.Id == id,
+            Builders<ServisKaydi>.Update
+                .Set(s => s.Teklif, teklif)
+                .Set(s => s.Durum, ServisDurumlari.OnayBekliyor));
+        await Veritabani.GecmiseYaz(id, ben, "Teklif verildi: " + istek.Tutar.ToString("N2") + " ₺");
+        return Ok();
+    }
+
+    // Müşteri onaylarsa iş başlar ("Devam ediyor"), reddederse kayıt iptal edilir.
+    [HttpPost("{id}/teklif/yanit")]
+    public async Task<IActionResult> TeklifYaniti(string id, TeklifYanitIstegi istek)
+    {
+        var ben = await Oturumlar.KullaniciyiBul(Request);
+        if (ben == null) return Unauthorized();
+
+        var kayit = await Veritabani.ServisKayitlari.Find(s => s.Id == id).FirstOrDefaultAsync();
+        if (kayit == null) return NotFound("Servis kaydı bulunamadı.");
+        if (kayit.Teklif == null || kayit.Teklif.Durum != TeklifDurumlari.Bekliyor)
+        {
+            return BadRequest("Cevap bekleyen bir teklif yok.");
+        }
+
+        string teklifDurumu = TeklifDurumlari.Reddedildi;
+        string yeniDurum = ServisDurumlari.IptalEdildi;
+        if (istek.Onaylandi)
+        {
+            teklifDurumu = TeklifDurumlari.Onaylandi;
+            yeniDurum = ServisDurumlari.DevamEdiyor;
+        }
+
+        kayit.Teklif.Durum = teklifDurumu;
+        kayit.Teklif.YanitTarihi = DateTime.UtcNow;
+        kayit.Teklif.YanitNotu = istek.Not;
+        await Veritabani.ServisKayitlari.UpdateOneAsync(
+            s => s.Id == id,
+            Builders<ServisKaydi>.Update
+                .Set(s => s.Teklif, kayit.Teklif)
+                .Set(s => s.Durum, yeniDurum));
+
+        string aciklama = "Müşteri teklifi " + teklifDurumu.ToLower() + ".";
+        if (istek.Not != "")
+        {
+            aciklama += " Not: " + istek.Not;
+        }
+        await Veritabani.GecmiseYaz(id, ben, aciklama);
+        return Ok();
+    }
+
+    [HttpGet("{id}/gecmis")]
+    public async Task<IActionResult> Gecmis(string id)
+    {
+        var ben = await Oturumlar.KullaniciyiBul(Request);
+        if (ben == null) return Unauthorized();
+
+        var gecmis = await Veritabani.IslemGecmisi.Find(g => g.ServisKaydiId == id)
+            .SortByDescending(g => g.Tarih).ToListAsync();
+        return Ok(gecmis);
+    }
+
+    // Personelin elle yazdığı not, örn. "Müşteri yarın gelip alacak." ya da "WhatsApp ile bilgilendirildi."
+    [HttpPost("{id}/notlar")]
+    public async Task<IActionResult> NotEkle(string id, NotIstegi istek)
+    {
+        var ben = await Oturumlar.KullaniciyiBul(Request);
+        if (ben == null) return Unauthorized();
+        if (string.IsNullOrWhiteSpace(istek.Metin)) return BadRequest("Not boş olamaz.");
+
+        long varMi = await Veritabani.ServisKayitlari.CountDocumentsAsync(s => s.Id == id);
+        if (varMi == 0) return NotFound("Servis kaydı bulunamadı.");
+
+        await Veritabani.GecmiseYaz(id, ben, istek.Metin.Trim());
+        return Ok();
+    }
+
+    [HttpGet("{id}/kabul-formu")]
+    public async Task<IActionResult> KabulFormu(string id)
+    {
+        return await FormGonder(id, false);
+    }
+
+    [HttpGet("{id}/teslim-formu")]
+    public async Task<IActionResult> TeslimFormu(string id)
+    {
+        return await FormGonder(id, true);
+    }
+
+    private async Task<IActionResult> FormGonder(string id, bool teslimFormu)
+    {
+        var ben = await Oturumlar.KullaniciyiBul(Request);
+        if (ben == null) return Unauthorized();
+
+        var kayit = await Veritabani.ServisKayitlari.Find(s => s.Id == id).FirstOrDefaultAsync();
+        if (kayit == null) return NotFound("Servis kaydı bulunamadı.");
+
+        byte[] pdf = ServisFormu.Olustur(kayit, teslimFormu);
+        return File(pdf, "application/pdf");
+    }
+
+    // Güncellemede neyin değiştiğini geçmişe yazmak için kısa bir açıklama hazırlar. Değişiklik yoksa "" döner.
+    private static string DegisiklikleriYaz(ServisKaydi eski, ServisKaydi yeni)
+    {
+        var degisiklikler = new List<string>();
+
+        if (eski.Durum != yeni.Durum)
+        {
+            degisiklikler.Add("Durum: " + eski.Durum + " → " + yeni.Durum);
+        }
+        if (eski.TeknisyenId != yeni.TeknisyenId)
+        {
+            string teknisyen = yeni.TeknisyenAdi == "" ? "atanmamış" : yeni.TeknisyenAdi;
+            degisiklikler.Add("Teknisyen: " + teknisyen);
+        }
+        if (eski.IscilikUcreti != yeni.IscilikUcreti)
+        {
+            degisiklikler.Add("İşçilik ücreti: " + yeni.IscilikUcreti.ToString("N2") + " ₺");
+        }
+        if (eski.OdendiMi != yeni.OdendiMi)
+        {
+            degisiklikler.Add(yeni.OdendiMi ? "Ödendi olarak işaretlendi" : "Ödenmedi olarak işaretlendi");
+        }
+        if (eski.Cihaz != yeni.Cihaz.Trim() || eski.SeriNo != yeni.SeriNo || eski.Sorun != yeni.Sorun
+            || eski.Aksesuarlar != yeni.Aksesuarlar || eski.YapilanIslem != yeni.YapilanIslem)
+        {
+            degisiklikler.Add("Kayıt bilgileri güncellendi");
+        }
+
+        return string.Join(", ", degisiklikler);
     }
 
     private static string? Dogrula(ServisKaydi kayit)
@@ -231,7 +393,8 @@ public class ServisKayitlariController : ControllerBase
     // Kayıt "Tamamlandı" ya da "Teslim edildi" olduğu anı not eder; geri alınırsa tarihi temizler.
     private static void TarihleriAyarla(ServisKaydi kayit)
     {
-        if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.DevamEdiyor)
+        if (kayit.Durum == ServisDurumlari.Beklemede || kayit.Durum == ServisDurumlari.OnayBekliyor
+            || kayit.Durum == ServisDurumlari.DevamEdiyor)
         {
             kayit.TamamlanmaTarihi = null;
             kayit.TeslimTarihi = null;

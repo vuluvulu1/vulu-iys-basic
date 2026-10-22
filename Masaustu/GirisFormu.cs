@@ -5,6 +5,8 @@ namespace Masaustu
         public GirisFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
+            picLogo.Image = Tema.LogoResmi(48);
         }
 
         private async void btnGiris_Click(object sender, EventArgs e)

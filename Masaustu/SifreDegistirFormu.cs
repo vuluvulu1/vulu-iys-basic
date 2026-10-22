@@ -7,6 +7,7 @@ namespace Masaustu
         public SifreDegistirFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
         }
 
         private async void btnKaydet_Click(object sender, EventArgs e)

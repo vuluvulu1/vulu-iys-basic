@@ -11,6 +11,7 @@ namespace Masaustu
         public MusteriFormu(Musteri? musteri)
         {
             InitializeComponent();
+            Tema.Uygula(this);
             this.musteri = musteri;
 
             if (musteri == null)

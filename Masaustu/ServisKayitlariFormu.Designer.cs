@@ -80,6 +80,7 @@
             btnYeni.Name = "btnYeni";
             btnYeni.Size = new Size(120, 32);
             btnYeni.TabIndex = 4;
+            btnYeni.Tag = "ana";
             btnYeni.Text = "Yeni kayıt";
             btnYeni.UseVisualStyleBackColor = true;
             btnYeni.Click += btnYeni_Click;

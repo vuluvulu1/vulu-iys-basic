@@ -7,6 +7,7 @@ namespace Masaustu
         public MusterilerFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
         }
 
         private async void Form_Load(object sender, EventArgs e)

@@ -7,6 +7,7 @@ namespace Masaustu
         public StokFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
         }
 
         private async void Form_Load(object sender, EventArgs e)
@@ -17,7 +18,7 @@ namespace Masaustu
             dgvParcalar.Columns.Add("Fiyat", "Satış fiyatı");
             dgvParcalar.Columns.Add("Stok", "Stok");
             dgvParcalar.Columns.Add("Kritik", "Kritik seviye");
-            dgvParcalar.Columns["Ad"].FillWeight = 180;
+            Yardimci.SutunPayi(dgvParcalar, "Ad", 180);
             Yardimci.SagaYasla(dgvParcalar, "Fiyat", "Stok", "Kritik");
 
             // Stoğu herkes görür ama yalnızca yetkisi olan değiştirebilir.
@@ -50,7 +51,8 @@ namespace Masaustu
                     // Stoğu azalan parçalar kırmızı görünsün.
                     if (parca.StokAdedi <= parca.KritikSeviye)
                     {
-                        dgvParcalar.Rows[satir].DefaultCellStyle.BackColor = Color.MistyRose;
+                        dgvParcalar.Rows[satir].DefaultCellStyle.BackColor = Tema.UyariSatiri;
+                        dgvParcalar.Rows[satir].DefaultCellStyle.ForeColor = Tema.Kirmizi;
                     }
                 }
             }

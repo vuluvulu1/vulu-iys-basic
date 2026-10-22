@@ -33,7 +33,7 @@
             lblBitis = new Label();
             dtpBitis = new DateTimePicker();
             btnGoster = new Button();
-            grpGenel = new GroupBox();
+            pnlGenel = new Panel();
             lblAcilan = new Label();
             lblTamamlanan = new Label();
             lblIptal = new Label();
@@ -44,7 +44,7 @@
             dgvTeknisyenler = new DataGridView();
             lblParcalar = new Label();
             dgvParcalar = new DataGridView();
-            grpGenel.SuspendLayout();
+            pnlGenel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvTeknisyenler).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvParcalar).BeginInit();
             SuspendLayout();
@@ -85,30 +85,31 @@
             // 
             btnGoster.Location = new Point(480, 14);
             btnGoster.Name = "btnGoster";
-            btnGoster.Size = new Size(120, 25);
+            btnGoster.Size = new Size(140, 25);
             btnGoster.TabIndex = 4;
+            btnGoster.Tag = "ana";
             btnGoster.Text = "Göster";
             btnGoster.UseVisualStyleBackColor = true;
             btnGoster.Click += btnGoster_Click;
             // 
-            // grpGenel
+            // pnlGenel
             // 
-            grpGenel.Controls.Add(lblAcilan);
-            grpGenel.Controls.Add(lblTamamlanan);
-            grpGenel.Controls.Add(lblIptal);
-            grpGenel.Controls.Add(lblToplamTutar);
-            grpGenel.Controls.Add(lblTahsil);
-            grpGenel.Controls.Add(lblKalan);
-            grpGenel.Location = new Point(20, 55);
-            grpGenel.Name = "grpGenel";
-            grpGenel.Size = new Size(600, 110);
-            grpGenel.TabIndex = 5;
-            grpGenel.Text = "Genel";
+            pnlGenel.Controls.Add(lblAcilan);
+            pnlGenel.Controls.Add(lblTamamlanan);
+            pnlGenel.Controls.Add(lblIptal);
+            pnlGenel.Controls.Add(lblToplamTutar);
+            pnlGenel.Controls.Add(lblTahsil);
+            pnlGenel.Controls.Add(lblKalan);
+            pnlGenel.Location = new Point(20, 55);
+            pnlGenel.Name = "pnlGenel";
+            pnlGenel.Size = new Size(600, 100);
+            pnlGenel.TabIndex = 5;
+            pnlGenel.Tag = "kart";
             // 
             // lblAcilan
             // 
             lblAcilan.AutoSize = true;
-            lblAcilan.Location = new Point(15, 25);
+            lblAcilan.Location = new Point(15, 15);
             lblAcilan.Name = "lblAcilan";
             lblAcilan.TabIndex = 6;
             lblAcilan.Text = "Açılan iş: -";
@@ -116,7 +117,7 @@
             // lblTamamlanan
             // 
             lblTamamlanan.AutoSize = true;
-            lblTamamlanan.Location = new Point(15, 50);
+            lblTamamlanan.Location = new Point(15, 42);
             lblTamamlanan.Name = "lblTamamlanan";
             lblTamamlanan.TabIndex = 7;
             lblTamamlanan.Text = "Tamamlanan iş: -";
@@ -124,7 +125,7 @@
             // lblIptal
             // 
             lblIptal.AutoSize = true;
-            lblIptal.Location = new Point(15, 75);
+            lblIptal.Location = new Point(15, 69);
             lblIptal.Name = "lblIptal";
             lblIptal.TabIndex = 8;
             lblIptal.Text = "İptal edilen iş: -";
@@ -132,7 +133,7 @@
             // lblToplamTutar
             // 
             lblToplamTutar.AutoSize = true;
-            lblToplamTutar.Location = new Point(300, 25);
+            lblToplamTutar.Location = new Point(300, 15);
             lblToplamTutar.Name = "lblToplamTutar";
             lblToplamTutar.TabIndex = 9;
             lblToplamTutar.Text = "Toplam tutar: -";
@@ -140,7 +141,7 @@
             // lblTahsil
             // 
             lblTahsil.AutoSize = true;
-            lblTahsil.Location = new Point(300, 50);
+            lblTahsil.Location = new Point(300, 42);
             lblTahsil.Name = "lblTahsil";
             lblTahsil.TabIndex = 10;
             lblTahsil.Text = "Tahsil edilen: -";
@@ -148,7 +149,7 @@
             // lblKalan
             // 
             lblKalan.AutoSize = true;
-            lblKalan.Location = new Point(300, 75);
+            lblKalan.Location = new Point(300, 69);
             lblKalan.Name = "lblKalan";
             lblKalan.TabIndex = 11;
             lblKalan.Text = "Tahsil edilmeyen: -";
@@ -156,7 +157,7 @@
             // lblTeknisyenler
             // 
             lblTeknisyenler.AutoSize = true;
-            lblTeknisyenler.Location = new Point(20, 178);
+            lblTeknisyenler.Location = new Point(20, 172);
             lblTeknisyenler.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblTeknisyenler.Name = "lblTeknisyenler";
             lblTeknisyenler.TabIndex = 12;
@@ -165,7 +166,7 @@
             // dgvTeknisyenler
             // 
             dgvTeknisyenler.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            dgvTeknisyenler.Location = new Point(20, 198);
+            dgvTeknisyenler.Location = new Point(20, 194);
             dgvTeknisyenler.Name = "dgvTeknisyenler";
             dgvTeknisyenler.Size = new Size(600, 130);
             dgvTeknisyenler.TabIndex = 13;
@@ -173,7 +174,7 @@
             // lblParcalar
             // 
             lblParcalar.AutoSize = true;
-            lblParcalar.Location = new Point(20, 343);
+            lblParcalar.Location = new Point(20, 340);
             lblParcalar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblParcalar.Name = "lblParcalar";
             lblParcalar.TabIndex = 14;
@@ -182,7 +183,7 @@
             // dgvParcalar
             // 
             dgvParcalar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            dgvParcalar.Location = new Point(20, 363);
+            dgvParcalar.Location = new Point(20, 362);
             dgvParcalar.Name = "dgvParcalar";
             dgvParcalar.Size = new Size(600, 140);
             dgvParcalar.TabIndex = 15;
@@ -196,7 +197,7 @@
             Controls.Add(lblParcalar);
             Controls.Add(dgvTeknisyenler);
             Controls.Add(lblTeknisyenler);
-            Controls.Add(grpGenel);
+            Controls.Add(pnlGenel);
             Controls.Add(btnGoster);
             Controls.Add(dtpBitis);
             Controls.Add(lblBitis);
@@ -211,8 +212,8 @@
             Load += Form_Load;
             ((System.ComponentModel.ISupportInitialize)dgvTeknisyenler).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvParcalar).EndInit();
-            grpGenel.ResumeLayout(false);
-            grpGenel.PerformLayout();
+            pnlGenel.ResumeLayout(false);
+            pnlGenel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -224,7 +225,7 @@
         private Label lblBitis;
         private DateTimePicker dtpBitis;
         private Button btnGoster;
-        private GroupBox grpGenel;
+        private Panel pnlGenel;
         private Label lblAcilan;
         private Label lblTamamlanan;
         private Label lblIptal;

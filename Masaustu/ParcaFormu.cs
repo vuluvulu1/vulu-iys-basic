@@ -10,6 +10,7 @@ namespace Masaustu
         public ParcaFormu(Parca? parca)
         {
             InitializeComponent();
+            Tema.Uygula(this);
             this.parca = parca;
 
             if (parca == null)

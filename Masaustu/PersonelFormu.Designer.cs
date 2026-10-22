@@ -50,6 +50,7 @@
             btnEkle.Name = "btnEkle";
             btnEkle.Size = new Size(120, 32);
             btnEkle.TabIndex = 1;
+            btnEkle.Tag = "ana";
             btnEkle.Text = "Yeni personel";
             btnEkle.UseVisualStyleBackColor = true;
             btnEkle.Click += btnEkle_Click;

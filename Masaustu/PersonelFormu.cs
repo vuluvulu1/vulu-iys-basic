@@ -7,6 +7,7 @@ namespace Masaustu
         public PersonelFormu()
         {
             InitializeComponent();
+            Tema.Uygula(this);
         }
 
         private async void Form_Load(object sender, EventArgs e)
@@ -38,7 +39,7 @@ namespace Masaustu
 
                     if (!kisi.AktifMi)
                     {
-                        dgvPersonel.Rows[satir].DefaultCellStyle.ForeColor = SystemColors.GrayText;
+                        dgvPersonel.Rows[satir].DefaultCellStyle.ForeColor = Tema.SolukYazi;
                     }
                 }
             }

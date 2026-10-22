@@ -155,6 +155,7 @@
             btnKaydet.Name = "btnKaydet";
             btnKaydet.Size = new Size(100, 32);
             btnKaydet.TabIndex = 13;
+            btnKaydet.Tag = "ana";
             btnKaydet.Text = "Kaydet";
             btnKaydet.UseVisualStyleBackColor = true;
             btnKaydet.Click += btnKaydet_Click;

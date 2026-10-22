@@ -14,16 +14,29 @@ namespace Masaustu
             tablo.MultiSelect = false;
             tablo.RowHeadersVisible = false;
             tablo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            tablo.BackgroundColor = SystemColors.Window;
         }
 
         // Para ve adet gibi sayılar sağa yaslı daha kolay okunur.
         public static void SagaYasla(DataGridView tablo, params string[] sutunlar)
         {
-            foreach (string sutun in sutunlar)
+            foreach (string ad in sutunlar)
             {
-                tablo.Columns[sutun].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                tablo.Columns[sutun].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+                DataGridViewColumn? sutun = tablo.Columns[ad];
+                if (sutun != null)
+                {
+                    sutun.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                    sutun.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+                }
+            }
+        }
+
+        // Sütunlar tabloyu doldurur; pay ne kadar büyükse sütun o kadar geniş olur (varsayılan pay 100).
+        public static void SutunPayi(DataGridView tablo, string ad, int pay)
+        {
+            DataGridViewColumn? sutun = tablo.Columns[ad];
+            if (sutun != null)
+            {
+                sutun.FillWeight = pay;
             }
         }
 
@@ -46,6 +59,21 @@ namespace Masaustu
         public static string Tarih(DateTime tarih)
         {
             return tarih.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+        }
+
+        // Dosyayı geçici klasöre yazar ve Windows'ta onu açan programla açar (PDF için tarayıcı ya da PDF okuyucu).
+        public static void DosyayiAc(byte[] icerik, string dosyaAdi)
+        {
+            string yol = Path.Combine(Path.GetTempPath(), dosyaAdi);
+            File.WriteAllBytes(yol, icerik);
+            AdresiAc(yol);
+        }
+
+        // Bir dosyayı ya da internet adresini varsayılan programla açar.
+        public static void AdresiAc(string adres)
+        {
+            var bilgi = new System.Diagnostics.ProcessStartInfo(adres) { UseShellExecute = true };
+            System.Diagnostics.Process.Start(bilgi);
         }
 
         public static void Hata(Exception hata)

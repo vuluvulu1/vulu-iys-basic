@@ -92,6 +92,7 @@
             btnKaydet.Name = "btnKaydet";
             btnKaydet.Size = new Size(100, 32);
             btnKaydet.TabIndex = 6;
+            btnKaydet.Tag = "ana";
             btnKaydet.Text = "Kaydet";
             btnKaydet.UseVisualStyleBackColor = true;
             btnKaydet.Click += btnKaydet_Click;

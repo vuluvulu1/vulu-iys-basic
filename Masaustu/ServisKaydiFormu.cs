@@ -2,16 +2,18 @@ using Modeller;
 
 namespace Masaustu
 {
-    // Servis kaydını açma ve düzenleme penceresi. Sağdaki bölümden kayda stoktan parça eklenir.
+    // Servis kaydını açma ve düzenleme penceresi.
+    // Solda kaydın bilgileri, sağda üç sekme var: kullanılan parçalar, fiyat teklifi ve işlem geçmişi.
     public partial class ServisKaydiFormu : Form
     {
-        // Yeni kayıtta null'dır; kaydedilince dolar ve parça bölümü açılır.
+        // Yeni kayıtta null'dır; kaydedilince dolar ve sağdaki bölümler açılır.
         private string? kayitId;
         private ServisKaydi kayit = new ServisKaydi();
 
         public ServisKaydiFormu(string? kayitId)
         {
             InitializeComponent();
+            Tema.Uygula(this);
             this.kayitId = kayitId;
         }
 
@@ -25,9 +27,22 @@ namespace Masaustu
             dgvParcalar.Columns.Add("Adet", "Adet");
             dgvParcalar.Columns.Add("Fiyat", "Birim fiyat");
             dgvParcalar.Columns.Add("Tutar", "Tutar");
-            dgvParcalar.Columns["Ad"].FillWeight = 160;
-            dgvParcalar.Columns["Adet"].FillWeight = 50;
+            Yardimci.SutunPayi(dgvParcalar, "Ad", 160);
+            Yardimci.SutunPayi(dgvParcalar, "Adet", 50);
             Yardimci.SagaYasla(dgvParcalar, "Adet", "Fiyat", "Tutar");
+
+            Yardimci.TabloyuHazirla(dgvGecmis);
+            dgvGecmis.Columns.Add("Tarih", "Tarih");
+            dgvGecmis.Columns.Add("Kisi", "Kim");
+            dgvGecmis.Columns.Add("Islem", "İşlem");
+            Yardimci.SutunPayi(dgvGecmis, "Tarih", 110);
+            Yardimci.SutunPayi(dgvGecmis, "Kisi", 70);
+            Yardimci.SutunPayi(dgvGecmis, "Islem", 180);
+            // Uzun açıklamalar alt satıra geçsin, satır da ona göre uzasın.
+            dgvGecmis.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgvGecmis.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            SekmeyiAc(pnlParcalar, btnSekmeParcalar);
 
             try
             {
@@ -37,6 +52,7 @@ namespace Masaustu
                 }
                 await SecenekleriYukle();
                 AlanlariDoldur();
+                await GecmisiYukle();
             }
             catch (Exception hata)
             {
@@ -118,18 +134,59 @@ namespace Masaustu
             // Kayıt açıldıktan sonra müşterisi değiştirilemez.
             cmbMusteri.Enabled = kayitId == null;
 
-            // Parça eklemek için kaydın veritabanında olması gerekir.
-            grpParcalar.Enabled = kayitId != null;
-            if (kayitId == null)
+            // Parça, teklif, geçmiş ve formlar için kaydın veritabanında olması gerekir.
+            bool kayitli = kayitId != null;
+            btnSekmeParcalar.Enabled = kayitli;
+            btnSekmeTeklif.Enabled = kayitli;
+            btnSekmeGecmis.Enabled = kayitli;
+            btnKabulFormu.Enabled = kayitli;
+            btnTeslimFormu.Enabled = kayitli;
+            btnWhatsApp.Enabled = kayitli;
+            lblYeniKayitNotu.Visible = !kayitli;
+            if (kayitli)
             {
-                grpParcalar.Text = "Kullanılan parçalar (önce kaydı kaydedin)";
+                SekmeyiAc(pnlParcalar, btnSekmeParcalar);
             }
             else
             {
-                grpParcalar.Text = "Kullanılan parçalar";
+                pnlParcalar.Visible = false;
+                pnlTeklif.Visible = false;
+                pnlGecmis.Visible = false;
             }
 
             ParcalariGoster();
+            TeklifiGoster();
+        }
+
+        // Sağ taraftaki üç panelden yalnızca birini gösterir; seçili sekmenin butonu vurgulanır.
+        private void SekmeyiAc(Panel panel, Button buton)
+        {
+            pnlParcalar.Visible = panel == pnlParcalar;
+            pnlTeklif.Visible = panel == pnlTeklif;
+            pnlGecmis.Visible = panel == pnlGecmis;
+
+            foreach (Button sekme in new[] { btnSekmeParcalar, btnSekmeTeklif, btnSekmeGecmis })
+            {
+                sekme.BackColor = Tema.Kutu;
+                sekme.ForeColor = Tema.Yazi;
+            }
+            buton.BackColor = Tema.Vurgu;
+            buton.ForeColor = Tema.Arka;
+        }
+
+        private void btnSekmeParcalar_Click(object sender, EventArgs e)
+        {
+            SekmeyiAc(pnlParcalar, btnSekmeParcalar);
+        }
+
+        private void btnSekmeTeklif_Click(object sender, EventArgs e)
+        {
+            SekmeyiAc(pnlTeklif, btnSekmeTeklif);
+        }
+
+        private void btnSekmeGecmis_Click(object sender, EventArgs e)
+        {
+            SekmeyiAc(pnlGecmis, btnSekmeGecmis);
         }
 
         private void ParcalariGoster()
@@ -152,6 +209,86 @@ namespace Masaustu
         private void nudIscilik_ValueChanged(object sender, EventArgs e)
         {
             ToplamiGoster();
+        }
+
+        private void TeklifiGoster()
+        {
+            Teklif? teklif = kayit.Teklif;
+            if (teklif == null)
+            {
+                lblTeklifDurumu.Text = "Henüz teklif verilmedi";
+                lblTeklifDurumu.ForeColor = Tema.Yazi;
+                lblTeklifBilgi.Text = "Teklif verilince kayıt \"Onay bekliyor\" olur.";
+                CevapBolumunuGoster(false);
+                return;
+            }
+
+            lblTeklifDurumu.Text = "Teklif: " + Yardimci.Para(teklif.Tutar) + "  -  " + teklif.Durum;
+            lblTeklifBilgi.Text = "Verildi: " + Yardimci.Tarih(teklif.Tarih);
+            if (teklif.YanitTarihi != null)
+            {
+                lblTeklifBilgi.Text += "   Cevap: " + Yardimci.Tarih(teklif.YanitTarihi.Value);
+            }
+
+            if (teklif.Durum == TeklifDurumlari.Onaylandi)
+            {
+                lblTeklifDurumu.ForeColor = Tema.Yesil;
+            }
+            else if (teklif.Durum == TeklifDurumlari.Reddedildi)
+            {
+                lblTeklifDurumu.ForeColor = Tema.Kirmizi;
+            }
+            else
+            {
+                lblTeklifDurumu.ForeColor = Tema.VurguAcik;
+            }
+
+            nudTeklifTutar.Value = teklif.Tutar;
+            txtTeklifAciklama.Text = teklif.Aciklama;
+
+            // Müşterinin cevabı yalnızca cevap bekleyen teklif için girilir.
+            CevapBolumunuGoster(teklif.Durum == TeklifDurumlari.Bekliyor);
+        }
+
+        private void CevapBolumunuGoster(bool goster)
+        {
+            lblCevapBasligi.Visible = goster;
+            lblYanitNotu.Visible = goster;
+            txtYanitNotu.Visible = goster;
+            btnOnayladi.Visible = goster;
+            btnReddetti.Visible = goster;
+            lblCevapIpucu.Visible = goster;
+        }
+
+        private async Task GecmisiYukle()
+        {
+            if (kayitId == null)
+            {
+                return;
+            }
+
+            List<IslemKaydi> gecmis = await Api.Getir<List<IslemKaydi>>("api/servis-kayitlari/" + kayitId + "/gecmis");
+            dgvGecmis.Rows.Clear();
+            foreach (IslemKaydi satir in gecmis)
+            {
+                dgvGecmis.Rows.Add(Yardimci.Tarih(satir.Tarih), satir.KullaniciAdi, satir.Aciklama);
+            }
+            dgvGecmis.ClearSelection();
+        }
+
+        // Parça, teklif ya da not işleminden sonra kaydı API'den yeniden okur.
+        // Soldaki kutulara dokunmaz; böylece yazılıp henüz kaydedilmemiş bilgiler kaybolmaz.
+        private async Task KaydiTazele()
+        {
+            ServisKaydi guncel = await Api.Getir<ServisKaydi>("api/servis-kayitlari/" + kayitId);
+            kayit.Parcalar = guncel.Parcalar;
+            kayit.Teklif = guncel.Teklif;
+            kayit.Durum = guncel.Durum;
+            cmbDurum.Text = guncel.Durum;
+
+            ParcalariGoster();
+            TeklifiGoster();
+            await GecmisiYukle();
         }
 
         private async void btnKaydet_Click(object sender, EventArgs e)
@@ -180,7 +317,7 @@ namespace Masaustu
                 {
                     kayit = await Api.Gonder<ServisKaydi>("api/servis-kayitlari", kayit);
                     kayitId = kayit.Id;
-                    MessageBox.Show(kayit.No + " numaralı kayıt açıldı. Şimdi kullanılan parçaları ekleyebilirsiniz.");
+                    MessageBox.Show(kayit.No + " numaralı kayıt açıldı. Şimdi parça ekleyebilir, teklif verebilir ya da kabul formunu yazdırabilirsiniz.");
                 }
                 else
                 {
@@ -189,6 +326,7 @@ namespace Masaustu
                     MessageBox.Show("Kaydedildi.");
                 }
                 AlanlariDoldur();
+                await GecmisiYukle();
             }
             catch (Exception hata)
             {
@@ -209,7 +347,8 @@ namespace Masaustu
             try
             {
                 await Api.Gonder<KullanilanParca>("api/servis-kayitlari/" + kayitId + "/parcalar", istek);
-                await ParcalariYenile();
+                await KaydiTazele();
+                await StokListesiniTazele();
             }
             catch (Exception hata)
             {
@@ -233,7 +372,8 @@ namespace Masaustu
             try
             {
                 await Api.Sil("api/servis-kayitlari/" + kayitId + "/parcalar/" + parca.Id);
-                await ParcalariYenile();
+                await KaydiTazele();
+                await StokListesiniTazele();
             }
             catch (Exception hata)
             {
@@ -241,19 +381,194 @@ namespace Masaustu
             }
         }
 
-        // Yalnızca parça listesini ve stok adetlerini tazeler; ekranda yazılıp henüz kaydedilmemiş bilgiler kaybolmaz.
-        private async Task ParcalariYenile()
+        // Parça eklenip çıkarılınca açılır listedeki stok adetleri değişir; seçili parça yerinde kalsın.
+        private async Task StokListesiniTazele()
         {
-            ServisKaydi guncel = await Api.Getir<ServisKaydi>("api/servis-kayitlari/" + kayitId);
-            kayit.Parcalar = guncel.Parcalar;
-            ParcalariGoster();
-
             int seciliSira = cmbParca.SelectedIndex;
             await ParcaListesiniYukle();
             if (seciliSira < cmbParca.Items.Count)
             {
                 cmbParca.SelectedIndex = seciliSira;
             }
+        }
+
+        private async void btnTeklifVer_Click(object sender, EventArgs e)
+        {
+            if (nudTeklifTutar.Value <= 0)
+            {
+                MessageBox.Show("Teklif tutarını yazın.");
+                return;
+            }
+
+            var istek = new TeklifIstegi { Tutar = nudTeklifTutar.Value, Aciklama = txtTeklifAciklama.Text };
+            try
+            {
+                await Api.Gonder("api/servis-kayitlari/" + kayitId + "/teklif", istek);
+                await KaydiTazele();
+            }
+            catch (Exception hata)
+            {
+                Yardimci.Hata(hata);
+            }
+        }
+
+        private async void btnOnayladi_Click(object sender, EventArgs e)
+        {
+            await TeklifeCevapVer(true);
+        }
+
+        private async void btnReddetti_Click(object sender, EventArgs e)
+        {
+            if (!Yardimci.Onayla("Müşteri teklifi reddetti mi? Kayıt \"İptal edildi\" olacak."))
+            {
+                return;
+            }
+            await TeklifeCevapVer(false);
+        }
+
+        private async Task TeklifeCevapVer(bool onaylandi)
+        {
+            var istek = new TeklifYanitIstegi { Onaylandi = onaylandi, Not = txtYanitNotu.Text };
+            try
+            {
+                await Api.Gonder("api/servis-kayitlari/" + kayitId + "/teklif/yanit", istek);
+                txtYanitNotu.Clear();
+                await KaydiTazele();
+            }
+            catch (Exception hata)
+            {
+                Yardimci.Hata(hata);
+            }
+        }
+
+        private async void btnNotEkle_Click(object sender, EventArgs e)
+        {
+            if (txtNot.Text.Trim() == "")
+            {
+                MessageBox.Show("Önce notu yazın.");
+                return;
+            }
+
+            try
+            {
+                await Api.Gonder("api/servis-kayitlari/" + kayitId + "/notlar", new NotIstegi { Metin = txtNot.Text });
+                txtNot.Clear();
+                await GecmisiYukle();
+            }
+            catch (Exception hata)
+            {
+                Yardimci.Hata(hata);
+            }
+        }
+
+        private async void btnKabulFormu_Click(object sender, EventArgs e)
+        {
+            await FormuAc("kabul-formu");
+        }
+
+        private async void btnTeslimFormu_Click(object sender, EventArgs e)
+        {
+            await FormuAc("teslim-formu");
+        }
+
+        // PDF'i API hazırlar; biz indirip bilgisayardaki PDF programıyla açarız. Oradan yazdırılabilir.
+        private async Task FormuAc(string formAdi)
+        {
+            try
+            {
+                byte[] pdf = await Api.DosyaGetir("api/servis-kayitlari/" + kayitId + "/" + formAdi);
+                Yardimci.DosyayiAc(pdf, kayit.No + "-" + formAdi + ".pdf");
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Form dosyası başka bir programda açık. Açık PDF'i kapatıp tekrar deneyin.");
+            }
+            catch (Exception hata)
+            {
+                Yardimci.Hata(hata);
+            }
+        }
+
+        // Müşteriye kaydın durumuna uygun bir mesaj hazırlar ve WhatsApp'ta açar.
+        // Mesajı program göndermez; personel WhatsApp'ta kontrol edip kendisi gönderir.
+        private async void btnWhatsApp_Click(object sender, EventArgs e)
+        {
+            string telefon = WhatsAppNumarasi(kayit.MusteriTelefon);
+            if (telefon == "")
+            {
+                MessageBox.Show("Müşterinin telefon numarası kayıtlı değil ya da geçersiz.");
+                return;
+            }
+
+            string mesaj = MusteriMesaji();
+            Yardimci.AdresiAc("https://wa.me/" + telefon + "?text=" + Uri.EscapeDataString(mesaj));
+
+            try
+            {
+                var not = new NotIstegi { Metin = "Müşteri WhatsApp ile bilgilendirildi (" + kayit.Durum + ")." };
+                await Api.Gonder("api/servis-kayitlari/" + kayitId + "/notlar", not);
+                await GecmisiYukle();
+            }
+            catch (Exception hata)
+            {
+                Yardimci.Hata(hata);
+            }
+        }
+
+        private string MusteriMesaji()
+        {
+            string giris = "Merhaba " + kayit.MusteriAdi + ", " + kayit.No + " numaralı kayıttaki " + kayit.Cihaz + " cihazınız ";
+
+            if (kayit.Durum == ServisDurumlari.OnayBekliyor && kayit.Teklif != null)
+            {
+                return giris + "için fiyat teklifimiz " + Yardimci.Para(kayit.Teklif.Tutar)
+                    + ". Onaylıyorsanız bize bildirmeniz yeterli, tamire hemen başlayalım.";
+            }
+            if (kayit.Durum == ServisDurumlari.DevamEdiyor)
+            {
+                return giris + "üzerinde çalışıyoruz. Hazır olduğunda size haber vereceğiz.";
+            }
+            if (kayit.Durum == ServisDurumlari.Tamamlandi)
+            {
+                return giris + "hazır. Toplam tutar: " + Yardimci.Para(kayit.ToplamTutar())
+                    + ". Cihazınızı teslim alabilirsiniz.";
+            }
+            if (kayit.Durum == ServisDurumlari.TeslimEdildi)
+            {
+                return giris + "teslim edilmiştir. Bizi tercih ettiğiniz için teşekkür ederiz.";
+            }
+            if (kayit.Durum == ServisDurumlari.IptalEdildi)
+            {
+                return giris + "için servis kaydı kapatılmıştır. Cihazınızı teslim alabilirsiniz.";
+            }
+            return giris + "servisimize alınmıştır. Durumu hakkında sizi bilgilendireceğiz.";
+        }
+
+        // "0532 111 22 33" gibi bir numarayı WhatsApp'ın istediği "905321112233" biçimine çevirir.
+        private static string WhatsAppNumarasi(string telefon)
+        {
+            string rakamlar = "";
+            foreach (char karakter in telefon)
+            {
+                if (char.IsDigit(karakter))
+                {
+                    rakamlar += karakter;
+                }
+            }
+
+            if (rakamlar.StartsWith("90") && rakamlar.Length == 12)
+            {
+                return rakamlar;
+            }
+            if (rakamlar.StartsWith("0") && rakamlar.Length == 11)
+            {
+                return "9" + rakamlar;
+            }
+            if (rakamlar.Length == 10)
+            {
+                return "90" + rakamlar;
+            }
+            return "";
         }
     }
 }
