@@ -1,4 +1,4 @@
-# vulu İYS (basit sürüm)
+# vulu İYS
 
 Servis ve onarım işletmeleri için küçük bir yönetim programı: müşteriler, servis kayıtları, stok, personel ve rapor.
 
